@@ -1,0 +1,45 @@
+export const API_ENDPOINTS = {
+  AUTH: {
+    LOGIN: '/users/login',
+    REGISTER: '/users/register',
+    LOGOUT: '/users/logout',
+    REFRESH: '/users/refresh',
+    ME: '/users/me',
+    FORGOT_PASSWORD: '/users/forgot-password',
+    RESET_PASSWORD: '/users/reset-password',
+    VERIFY_EMAIL: '/users/verify-email',
+    RESEND_VERIFICATION: '/users/resend-verification',
+  },
+  USERS: {
+    BY_ID: (userId: string) => `/users/${userId}`,
+    BY_EMAIL: (email: string) => `/users/email/${email}`,
+    UPDATE_PROFILE: (userId: string) => `/users/${userId}/profile`,
+    SUSPEND: (userId: string) => `/users/${userId}/suspend`,
+    REACTIVATE: (userId: string) => `/users/${userId}/reactivate`,
+    DEACTIVATE: (userId: string) => `/users/${userId}/deactivate`,
+    VERIFY_EMAIL: (userId: string) => `/users/${userId}/verify-email`,
+  },
+  PRODUCTS: {
+    LIST: '/products',
+    DETAIL: (id: string) => `/products/${id}`,
+    SEARCH: '/products/search',
+    CATEGORIES: '/products/categories',
+  },
+  CART: {
+    GET: '/cart',
+    ADD: '/cart/items',
+    UPDATE: (id: string) => `/cart/items/${id}`,
+    REMOVE: (id: string) => `/cart/items/${id}`,
+    CLEAR: '/cart/clear',
+  },
+  ORDERS: {
+    LIST: '/orders',
+    DETAIL: (id: string) => `/orders/${id}`,
+    CREATE: '/orders',
+    CANCEL: (id: string) => `/orders/${id}/cancel`,
+  },
+  PAYMENT: {
+    INTENT: '/payment/intent',
+    CONFIRM: '/payment/confirm',
+  },
+} as const;

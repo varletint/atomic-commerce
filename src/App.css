@@ -1,0 +1,18 @@
+/* App.css — Application-level layout styles */
+
+/* Page-level wrapper for centered content */
+.page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-header {
+  padding: var(--space-12) 0 var(--space-8);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.page-content {
+  flex: 1;
+  padding: var(--space-8) 0;
+}
