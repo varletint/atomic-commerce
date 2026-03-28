@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { ChevronUp, ChevronDown } from 'lucide-react';
+import type { ProductImage } from '@/types';
 
 interface ProductGalleryProps {
-  images: string[];
+  images: ProductImage[];
   productName: string;
 }
 
@@ -38,8 +38,8 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
               aria-label={`View image ${idx + 1}`}
             >
               <img
-                src={img}
-                alt={`${productName} thumbnail ${idx + 1}`}
+                src={img.url}
+                alt={img.altText ?? `${productName} thumbnail ${idx + 1}`}
                 className="w-full h-full object-cover"
                 loading="lazy"
               />
@@ -53,8 +53,8 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
         {/* Aspect ratio container matching standard fashion e-com (3:4) */}
         <div className="w-full aspect-[3/4] relative">
           <img
-            src={images[activeIndex]}
-            alt={`${productName} view ${activeIndex + 1}`}
+            src={images[activeIndex]?.url}
+            alt={images[activeIndex]?.altText ?? `${productName} view ${activeIndex + 1}`}
             className="absolute inset-0 w-full h-full object-cover"
             loading="eager"
           />

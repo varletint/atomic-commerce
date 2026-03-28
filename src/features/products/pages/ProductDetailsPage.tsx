@@ -12,37 +12,116 @@ import { VariantSelector } from '../components/VariantSelector';
 import { QuantitySelector } from '../components/QuantitySelector';
 import { ProductAccordion } from '../components/ProductAccordion';
 
+// Types + helpers
+import type { Product, ProductColor } from '@/types';
+import { getUniqueColors, getUniqueSizes } from '@/types';
+import { Button } from '@/components/ui/Button';
+
+// ── Color hex map (in production this comes from backend/CMS) ──
+const COLOR_HEX_MAP: Record<string, string> = {
+  'Obsidian Black': '#0a0a0a',
+  'Pure White': '#ffffff',
+  'Slate Gray': '#737373',
+};
+
+function toProductColor(name: string): ProductColor {
+  return { name, hex: COLOR_HEX_MAP[name] ?? '#888888' };
+}
+
 // Mock Data / Hooks
 // In a real app we'd use: const { data: product, isLoading } = useProduct(slug!);
-import type { Product } from '@/types';
-const MOCK_COLORS = [
-  { name: 'Obsidian Black', hex: '#0a0a0a' },
-  { name: 'Pure White', hex: '#ffffff' },
-  { name: 'Slate Gray', hex: '#737373' },
-];
-
 const MOCK_PRODUCT: Product = {
   id: '2',
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
   name: 'Babban Riga',
+  shortDescription: 'Traditional elegance redefined',
   description:
     'Traditional elegance redefined. Hand-tailored from premium quality cotton, the Babban Riga features intricate embroidery and a relaxed, draped silhouette. Designed to offer both supreme comfort and undeniable presence for formal occasions. The attention to detail in the stitching makes every piece unique.',
   price: 99000.0,
   compareAtPrice: 105000.0,
-  images: ['/images/home/7.jpg', '/images/home/6.jpg', '/images/home/category-apparel.png'],
   category: 'Kaftan',
-  stock: 12,
   sku: 'KAF-001',
   slug: 'babban-riga',
-  colors: MOCK_COLORS,
-  sizes: ['S', 'M', 'L', 'XL'],
+  brand: 'Atomic Wear',
+  tags: ['new-arrival', 'premium'],
+  productType: 'physical',
+  images: [
+    { url: '/images/home/7.jpg', altText: 'Babban Riga front view', sortOrder: 0, isPrimary: true },
+    { url: '/images/home/6.jpg', altText: 'Babban Riga side view', sortOrder: 1, isPrimary: false },
+    {
+      url: '/images/home/category-apparel.png',
+      altText: 'Babban Riga detail',
+      sortOrder: 2,
+      isPrimary: false,
+    },
+  ],
+  hasVariants: true,
+  variants: [
+    {
+      _id: 'v1',
+      sku: 'KAF-001-BLK-S',
+      variantOptions: [
+        { name: 'Color', value: 'Obsidian Black' },
+        { name: 'Size', value: 'S' },
+      ],
+      price: 99000,
+      isActive: true,
+    },
+    {
+      _id: 'v2',
+      sku: 'KAF-001-BLK-M',
+      variantOptions: [
+        { name: 'Color', value: 'Obsidian Black' },
+        { name: 'Size', value: 'M' },
+      ],
+      price: 99000,
+      isActive: true,
+    },
+    {
+      _id: 'v3',
+      sku: 'KAF-001-BLK-L',
+      variantOptions: [
+        { name: 'Color', value: 'Obsidian Black' },
+        { name: 'Size', value: 'L' },
+      ],
+      price: 99000,
+      isActive: true,
+    },
+    {
+      _id: 'v4',
+      sku: 'KAF-001-WHT-M',
+      variantOptions: [
+        { name: 'Color', value: 'Pure White' },
+        { name: 'Size', value: 'M' },
+      ],
+      price: 99000,
+      isActive: true,
+    },
+    {
+      _id: 'v5',
+      sku: 'KAF-001-GRY-XL',
+      variantOptions: [
+        { name: 'Color', value: 'Slate Gray' },
+        { name: 'Size', value: 'XL' },
+      ],
+      price: 99000,
+      isActive: true,
+    },
+  ],
+  variantOptionNames: ['Color', 'Size'],
   material: 'Premium Cotton',
   weight: 850,
-  tags: ['new-arrival', 'premium'],
-  rating: 4.9,
+  weightUnit: 'g',
+  careInstructions: 'Hand wash cold. Lay flat to dry. Do not bleach.',
+  isFeatured: false,
+  avgRating: 4.9,
   reviewCount: 42,
-  variants: [],
+  minOrderQty: 1,
+  isActive: true,
+  stock: 12,
+  reserved: 0,
+  available: 12,
 };
 
 export function ProductDetailsPage() {
@@ -65,29 +144,57 @@ export function ProductDetailsPage() {
     setIsLoading(true);
     const timer = setTimeout(() => {
       setProduct(MOCK_PRODUCT);
-      if (MOCK_PRODUCT.colors?.[0]?.name) setSelectedColor(MOCK_PRODUCT.colors[0].name);
+      const colors = getUniqueColors(MOCK_PRODUCT);
+      if (colors[0]) setSelectedColor(colors[0]);
       setIsLoading(false);
     }, 600);
     return () => clearTimeout(timer);
   }, [slug]);
 
+  // Derive display data from variants
+  const colorNames = product ? getUniqueColors(product) : [];
+  const colorSwatches = colorNames.map(toProductColor);
+  const sizes = product ? getUniqueSizes(product) : [];
+
   const handleAddToCart = () => {
     if (!product) return;
 
-    if (product.sizes?.length && !selectedSize) {
+    if (sizes.length > 0 && !selectedSize) {
       setError('Please select a size');
       return;
     }
 
     setError('');
 
-    // In a real app, we'd add the specific variant:
-    // addItem({ ...product, selectedVariant: { color: selectedColor, size: selectedSize } }, quantity);
-    addItem(product, quantity);
+    // Construct the selectedVariant object
+    const selectedVariant: Record<string, string> = {};
+    if (selectedColor) selectedVariant['Color'] = selectedColor;
+    if (selectedSize) selectedVariant['Size'] = selectedSize;
 
-    // Briefly show success or navigate to cart
-    // navigate(ROUTES.CART);
-    alert(`Added ${quantity}x ${product.name} to cart!`);
+    addItem(product, quantity, selectedVariant);
+
+    // Navigate to cart
+    navigate(ROUTES.CART);
+  };
+
+  const handleBuyItNow = () => {
+    if (!product) return;
+
+    if (sizes.length > 0 && !selectedSize) {
+      setError('Please select a size before buying');
+      return;
+    }
+
+    setError('');
+
+    const selectedVariant: Record<string, string> = {};
+    if (selectedColor) selectedVariant['Color'] = selectedColor;
+    if (selectedSize) selectedVariant['Size'] = selectedSize;
+
+    addItem(product, quantity, selectedVariant);
+
+    // Navigate directly to checkout
+    navigate(ROUTES.CHECKOUT);
   };
 
   const hasDiscount = product?.compareAtPrice && product.compareAtPrice > product.price;
@@ -118,7 +225,7 @@ export function ProductDetailsPage() {
     <>
       <SEO
         title={`${product.name} — Atomic Order`}
-        description={product.description.substring(0, 150)}
+        description={product.shortDescription ?? product.description.substring(0, 150)}
       />
 
       <div className="bg-[var(--color-bg)] min-h-screen pt-4 pb-24">
@@ -178,15 +285,15 @@ export function ProductDetailsPage() {
                 {product.name}
               </h1>
 
-              {product.rating !== undefined && (
+              {product.avgRating > 0 && (
                 <div className="flex items-center gap-2 mb-6 border-b border-[var(--color-border)] pb-6">
                   <div className="flex items-center gap-0.5 text-[var(--color-text-heading)]">
                     <Star size={16} className="fill-current" />
                   </div>
                   <span className="text-sm font-bold text-[var(--color-text-heading)] mt-0.5">
-                    {product.rating.toFixed(1)}
+                    {product.avgRating.toFixed(1)}
                   </span>
-                  {product.reviewCount !== undefined && (
+                  {product.reviewCount > 0 && (
                     <span className="text-sm text-[var(--color-text-muted)] mt-0.5 underline hover:text-[var(--color-text-heading)] cursor-pointer transition-colors">
                       {product.reviewCount} Reviews
                     </span>
@@ -214,10 +321,10 @@ export function ProductDetailsPage() {
               {/* Variant Selectors */}
               <div className="mb-10 p-6 bg-[var(--color-bg-subtle)] border border-[var(--color-border)]">
                 <VariantSelector
-                  colors={product.colors}
+                  colors={colorSwatches}
                   selectedColor={selectedColor}
                   onColorSelect={(c) => setSelectedColor(c)}
-                  sizes={product.sizes}
+                  sizes={sizes}
                   selectedSize={selectedSize}
                   onSizeSelect={(s) => {
                     setSelectedSize(s);
@@ -228,23 +335,24 @@ export function ProductDetailsPage() {
 
               {/* Buy Box */}
               <div className="flex flex-col gap-4 mb-4">
-                <div className="flex flex-col sm:flex-row gap-4 items-end">
+                <div className="flex flex-col sm:flex-row gap-4 sm:justify-between items-end">
                   <QuantitySelector
                     quantity={quantity}
                     onQuantityChange={setQuantity}
-                    maxQuantity={product.stock}
+                    maxQuantity={product.available}
                   />
 
-                  <button
+                  {/* <button
                     type="button"
                     onClick={handleAddToCart}
-                    disabled={product.stock === 0}
+                    disabled={product.available === 0}
                     className="flex-1 h-[52px] bg-[var(--color-accent)] text-[var(--color-text-inverse)]
                       text-sm font-black uppercase tracking-[0.15em] border border-[var(--color-accent)]
                       hover:bg-[var(--color-accent-hover)] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
-                  </button>
+                    {product.available === 0 ? 'Out of Stock' : 'Add to Cart'}
+                  </button> */}
+                  <Button>{product.available === 0 ? 'Out of Stock' : 'Add to Cart'}</Button>
                 </div>
 
                 {/* Error message slot */}
@@ -254,20 +362,23 @@ export function ProductDetailsPage() {
                   </p>
                 )}
 
-                <button
+                {/* <button
                   type="button"
-                  disabled={product.stock === 0}
+                  onClick={handleBuyItNow}
+                  disabled={product.available === 0}
                   className="w-full h-[52px] bg-[var(--color-bg)] text-[var(--color-text-heading)]
                     text-sm font-black uppercase tracking-[0.15em] border border-[var(--color-border-strong)]
                     hover:border-[var(--color-text-heading)] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Buy It Now
-                </button>
+                </button> */}
+
+                <Button> Buy It Now </Button>
               </div>
 
               <div className="flex items-center gap-2 mb-10 text-xs text-[var(--color-text-muted)] tracking-wider">
                 <span className="w-2 h-2 rounded-full bg-green-500" />
-                {product.stock > 0 ? `IN STOCK — READY TO SHIP` : 'CURRENTLY OUT OF STOCK'}
+                {product.available > 0 ? `IN STOCK — READY TO SHIP` : 'CURRENTLY OUT OF STOCK'}
               </div>
 
               {/* Details Accordion */}
@@ -275,6 +386,8 @@ export function ProductDetailsPage() {
                 description={product.description}
                 material={product.material}
                 weight={product.weight}
+                weightUnit={product.weightUnit}
+                careInstructions={product.careInstructions}
               />
             </div>
           </div>

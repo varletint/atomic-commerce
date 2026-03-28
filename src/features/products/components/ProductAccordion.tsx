@@ -50,9 +50,17 @@ interface ProductAccordionProps {
   description: string;
   material?: string;
   weight?: number;
+  weightUnit?: string;
+  careInstructions?: string;
 }
 
-export function ProductAccordion({ description, material, weight }: ProductAccordionProps) {
+export function ProductAccordion({
+  description,
+  material,
+  weight,
+  weightUnit = 'g',
+  careInstructions,
+}: ProductAccordionProps) {
   const [openSection, setOpenSection] = useState<string | null>('details');
 
   const toggleSection = (section: string) => {
@@ -68,7 +76,7 @@ export function ProductAccordion({ description, material, weight }: ProductAccor
         content={description}
       />
 
-      {(material || weight) && (
+      {(material || weight || careInstructions) && (
         <AccordionItem
           title="Materials & Care"
           isOpen={openSection === 'materials'}
@@ -88,11 +96,21 @@ export function ProductAccordion({ description, material, weight }: ProductAccor
                   <strong className="text-[var(--color-text-heading)] font-semibold">
                     Weight:
                   </strong>{' '}
-                  {weight}g
+                  {weight}
+                  {weightUnit}
                 </li>
               )}
-              <li>Dry clean only.</li>
-              <li>Do not bleach.</li>
+              {careInstructions ? (
+                <li>
+                  <strong className="text-[var(--color-text-heading)] font-semibold">Care:</strong>{' '}
+                  {careInstructions}
+                </li>
+              ) : (
+                <>
+                  <li>Dry clean only.</li>
+                  <li>Do not bleach.</li>
+                </>
+              )}
             </ul>
           }
         />

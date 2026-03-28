@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, ShoppingBag } from 'lucide-react';
 import { ROUTES } from '@/config/routes';
+import { formatCurrency } from '@/utils';
 
 /* ── Mock featured products (replace with API call later) ── */
 const FEATURED_PRODUCTS = [
@@ -40,10 +41,6 @@ const FEATURED_PRODUCTS = [
     slug: 'matte-leather-folio',
   },
 ];
-
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(amount);
-}
 
 export function FeaturedProducts() {
   return (

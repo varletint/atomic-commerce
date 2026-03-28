@@ -1,18 +1,27 @@
 import { Link } from 'react-router-dom';
 import { ShoppingBag, Star } from 'lucide-react';
-import type { Product } from '@/types';
+import type { Product, ProductColor } from '@/types';
+import { getPrimaryImageUrl, getUniqueColors, getUniqueSizes } from '@/types';
 import { formatCurrency } from '@/utils';
 
 interface ProductCardProps {
   product: Product;
   viewMode?: 'grid' | 'list';
+  /** Pre-computed color swatches (with hex) — passed from parent for richer display */
+  colorSwatches?: ProductColor[];
 }
 
-export function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
+export function ProductCard({ product, viewMode = 'grid', colorSwatches }: ProductCardProps) {
   const hasDiscount = product.compareAtPrice && product.compareAtPrice > product.price;
   const isNew = product.tags?.includes('new-arrival');
+
+  // Derive colors and sizes from variants
+  const colors = colorSwatches ?? [];
+  const sizes = getUniqueSizes(product);
+  const imageUrl = getPrimaryImageUrl(product);
+
   const maxSwatches = 4;
-  const extraColors = Math.max(0, (product.colors?.length ?? 0) - maxSwatches);
+  const extraColors = Math.max(0, colors.length - maxSwatches);
 
   if (viewMode === 'list') {
     return (
@@ -31,9 +40,9 @@ export function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
           </h3>
 
           {/* Color swatches */}
-          {product.colors?.length > 0 && (
+          {colors.length > 0 && (
             <div className="flex items-center gap-1.5 mt-1">
-              {product.colors.slice(0, maxSwatches).map((c) => (
+              {colors.slice(0, maxSwatches).map((c) => (
                 <span
                   key={c.hex}
                   className="w-4 h-4 border border-[var(--color-border-strong)] shrink-0"
@@ -50,9 +59,9 @@ export function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
           )}
 
           {/* Sizes */}
-          {product.sizes?.length > 0 && (
+          {sizes.length > 0 && (
             <div className="flex items-center gap-1 mt-0.5">
-              {product.sizes.map((s) => (
+              {sizes.map((s) => (
                 <span
                   key={s}
                   className="text-[0.625rem] text-[var(--color-text-muted)] font-medium"
@@ -76,16 +85,16 @@ export function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
           </div>
 
           {/* Rating */}
-          {product.rating !== undefined && (
+          {product.avgRating > 0 && (
             <div className="flex items-center gap-1">
               <Star
                 size={12}
                 className="fill-[var(--color-text-heading)] text-[var(--color-text-heading)]"
               />
               <span className="text-xs font-semibold text-[var(--color-text-heading)]">
-                {product.rating.toFixed(1)}
+                {product.avgRating.toFixed(1)}
               </span>
-              {product.reviewCount !== undefined && (
+              {product.reviewCount > 0 && (
                 <span className="text-xs text-[var(--color-text-muted)]">
                   ({product.reviewCount})
                 </span>
@@ -117,7 +126,7 @@ export function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
             </span>
           )}
           <img
-            src={product.images[0]}
+            src={imageUrl}
             alt={product.name}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             loading="lazy"
@@ -142,7 +151,7 @@ export function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
           </span>
         )}
         <img
-          src={product.images[0]}
+          src={imageUrl}
           alt={product.name}
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.06]"
           loading="lazy"
@@ -152,7 +161,7 @@ export function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
           type="button"
           className="absolute bottom-3 right-3 z-2 w-10 h-10 flex items-center justify-center
             bg-[var(--color-bg)] text-[var(--color-text-heading)] border border-[var(--color-border)]
-            opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0
+            opacity-100 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0
             hover:bg-[var(--color-accent)] hover:text-[var(--color-text-inverse)] hover:border-[var(--color-accent)]
             transition-all duration-150 cursor-pointer"
           onClick={(e) => {
@@ -173,9 +182,9 @@ export function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
         <h3 className="text-base font-semibold text-[var(--color-text-heading)]">{product.name}</h3>
 
         {/* Color swatches */}
-        {product.colors?.length > 0 && (
+        {colors.length > 0 && (
           <div className="flex items-center gap-1.5 mt-0.5">
-            {product.colors.slice(0, maxSwatches).map((c) => (
+            {colors.slice(0, maxSwatches).map((c) => (
               <span
                 key={c.hex}
                 className="w-3.5 h-3.5 border border-[var(--color-border-strong)] shrink-0"
@@ -192,9 +201,9 @@ export function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
         )}
 
         {/* Sizes */}
-        {product.sizes?.length > 0 && (
+        {sizes.length > 0 && (
           <div className="flex items-center gap-1.5">
-            {product.sizes.map((s) => (
+            {sizes.map((s) => (
               <span
                 key={s}
                 className="text-[0.625rem] text-[var(--color-text-muted)] font-medium uppercase"
@@ -217,16 +226,16 @@ export function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
           )}
         </div>
 
-        {product.rating !== undefined && (
+        {product.avgRating > 0 && (
           <div className="flex items-center gap-1 mt-0.5">
             <Star
               size={12}
               className="fill-[var(--color-text-heading)] text-[var(--color-text-heading)]"
             />
             <span className="text-xs font-semibold text-[var(--color-text-heading)]">
-              {product.rating.toFixed(1)}
+              {product.avgRating.toFixed(1)}
             </span>
-            {product.reviewCount !== undefined && (
+            {product.reviewCount > 0 && (
               <span className="text-xs text-[var(--color-text-muted)]">
                 ({product.reviewCount})
               </span>

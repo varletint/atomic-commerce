@@ -9,130 +9,375 @@ import { FilterSidebar } from '../components/FilterSidebar';
 import { Pagination } from '../components/Pagination';
 import { ProductSkeleton } from '../components/ProductSkeleton';
 import type { Product, ProductColor } from '@/types';
+import { getUniqueColors, getUniqueSizes } from '@/types';
+
+// ── Color hex map (for UI swatches — in production this comes from the CMS/backend) ────────
+const COLOR_HEX_MAP: Record<string, string> = {
+  'Obsidian Black': '#0a0a0a',
+  'Pure White': '#ffffff',
+  'Slate Gray': '#737373',
+  'Navy Blue': '#1e3a8a',
+  Red: '#ef4444',
+};
+
+function toProductColor(name: string): ProductColor {
+  return { name, hex: COLOR_HEX_MAP[name] ?? '#888888' };
+}
 
 // ── Mock Data (Replace with API real data later) ────────
-const MOCK_COLORS: ProductColor[] = [
-  { name: 'Obsidian Black', hex: '#0a0a0a' },
-  { name: 'Pure White', hex: '#ffffff' },
-  { name: 'Slate Gray', hex: '#737373' },
-  { name: 'Navy Blue', hex: '#1e3a8a' },
-];
-
 const MOCK_PRODUCTS: Product[] = [
   {
     id: '1',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     name: 'Precision Chronograph',
+    shortDescription: 'A modern horology masterpiece',
     description: 'A masterpiece of modern horology...',
     price: 99549.0,
     compareAtPrice: 105900.0,
-    images: ['/images/home/category-accessories.png'],
     category: 'Accessories',
-    stock: 12,
     sku: 'ACC-001',
     slug: 'precision-chronograph',
-    colors: [MOCK_COLORS[0], MOCK_COLORS[1]],
-    sizes: ['ONE SIZE'],
-    material: 'Stainless Steel',
+    brand: 'Atomic Wear',
     tags: ['best-seller'],
-    rating: 4.8,
+    productType: 'physical',
+    images: [
+      {
+        url: '/images/home/category-accessories.png',
+        altText: 'Precision Chronograph',
+        sortOrder: 0,
+        isPrimary: true,
+      },
+    ],
+    hasVariants: true,
+    variants: [
+      {
+        _id: 'v1a',
+        sku: 'ACC-001-BLK',
+        variantOptions: [{ name: 'Color', value: 'Obsidian Black' }],
+        price: 99549,
+        isActive: true,
+      },
+      {
+        _id: 'v1b',
+        sku: 'ACC-001-WHT',
+        variantOptions: [{ name: 'Color', value: 'Pure White' }],
+        price: 99549,
+        isActive: true,
+      },
+    ],
+    variantOptionNames: ['Color'],
+    material: 'Stainless Steel',
+    weight: 150,
+    weightUnit: 'g',
+    isFeatured: true,
+    avgRating: 4.8,
     reviewCount: 124,
-    variants: [],
+    minOrderQty: 1,
+    isActive: true,
+    stock: 12,
+    reserved: 0,
+    available: 12,
   },
   {
     id: '2',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     name: 'Babban Riga',
+    shortDescription: 'Traditional elegance redefined',
     description: 'Traditional elegance redefined...',
     price: 99000.0,
     compareAtPrice: 105000.0,
-    images: ['/images/home/7.jpg'],
     category: 'Kaftan',
-    stock: 5,
     sku: 'KAF-001',
     slug: 'babban-riga',
-    colors: [MOCK_COLORS[0], MOCK_COLORS[2]],
-    sizes: ['M', 'L', 'XL'],
-    material: 'Cotton',
+    brand: 'Atomic Wear',
     tags: ['new-arrival'],
-    rating: 4.9,
+    productType: 'physical',
+    images: [
+      { url: '/images/home/7.jpg', altText: 'Babban Riga front', sortOrder: 0, isPrimary: true },
+    ],
+    hasVariants: true,
+    variants: [
+      {
+        _id: 'v2a',
+        sku: 'KAF-001-BLK-M',
+        variantOptions: [
+          { name: 'Color', value: 'Obsidian Black' },
+          { name: 'Size', value: 'M' },
+        ],
+        price: 99000,
+        isActive: true,
+      },
+      {
+        _id: 'v2b',
+        sku: 'KAF-001-BLK-L',
+        variantOptions: [
+          { name: 'Color', value: 'Obsidian Black' },
+          { name: 'Size', value: 'L' },
+        ],
+        price: 99000,
+        isActive: true,
+      },
+      {
+        _id: 'v2c',
+        sku: 'KAF-001-GRY-XL',
+        variantOptions: [
+          { name: 'Color', value: 'Slate Gray' },
+          { name: 'Size', value: 'XL' },
+        ],
+        price: 99000,
+        isActive: true,
+      },
+    ],
+    variantOptionNames: ['Color', 'Size'],
+    material: 'Cotton',
+    weight: 850,
+    weightUnit: 'g',
+    isFeatured: false,
+    avgRating: 4.9,
     reviewCount: 42,
-    variants: [],
+    minOrderQty: 1,
+    isActive: true,
+    stock: 5,
+    reserved: 0,
+    available: 5,
   },
   {
     id: '3',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     name: 'Essential Crew Tee',
+    shortDescription: 'The perfect everyday t-shirt',
     description: 'The perfect everyday t-shirt...',
     price: 25788.0,
     compareAtPrice: 75000.0,
-    images: ['/images/home/category-apparel.png'],
     category: 'Apparel',
-    stock: 100,
     sku: 'APP-001',
     slug: 'essential-crew-tee',
-    colors: MOCK_COLORS,
-    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    material: 'Cotton',
+    brand: 'Atomic Basics',
     tags: ['essential'],
-    rating: 4.5,
+    productType: 'physical',
+    images: [
+      {
+        url: '/images/home/category-apparel.png',
+        altText: 'Essential Crew Tee',
+        sortOrder: 0,
+        isPrimary: true,
+      },
+    ],
+    hasVariants: true,
+    variants: [
+      {
+        _id: 'v3a',
+        sku: 'APP-001-BLK-S',
+        variantOptions: [
+          { name: 'Color', value: 'Obsidian Black' },
+          { name: 'Size', value: 'S' },
+        ],
+        price: 25788,
+        isActive: true,
+      },
+      {
+        _id: 'v3b',
+        sku: 'APP-001-WHT-M',
+        variantOptions: [
+          { name: 'Color', value: 'Pure White' },
+          { name: 'Size', value: 'M' },
+        ],
+        price: 25788,
+        isActive: true,
+      },
+      {
+        _id: 'v3c',
+        sku: 'APP-001-GRY-L',
+        variantOptions: [
+          { name: 'Color', value: 'Slate Gray' },
+          { name: 'Size', value: 'L' },
+        ],
+        price: 25788,
+        isActive: true,
+      },
+      {
+        _id: 'v3d',
+        sku: 'APP-001-NVY-XL',
+        variantOptions: [
+          { name: 'Color', value: 'Navy Blue' },
+          { name: 'Size', value: 'XL' },
+        ],
+        price: 25788,
+        isActive: true,
+      },
+      {
+        _id: 'v3e',
+        sku: 'APP-001-BLK-XXL',
+        variantOptions: [
+          { name: 'Color', value: 'Obsidian Black' },
+          { name: 'Size', value: 'XXL' },
+        ],
+        price: 25788,
+        isActive: true,
+      },
+    ],
+    variantOptionNames: ['Color', 'Size'],
+    material: 'Cotton',
+    weight: 200,
+    weightUnit: 'g',
+    isFeatured: false,
+    avgRating: 4.5,
     reviewCount: 312,
-    variants: [],
+    minOrderQty: 1,
+    isActive: true,
+    stock: 100,
+    reserved: 0,
+    available: 100,
   },
   {
     id: '4',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     name: 'Qube',
+    shortDescription: 'Traditional headwear',
     description: 'Traditional headwear...',
     price: 50999.0,
-    images: ['/images/home/6.jpg'],
     category: 'Hulla',
-    stock: 0,
     sku: 'HUL-001',
     slug: 'qube',
-    colors: [
-      MOCK_COLORS[0],
-      MOCK_COLORS[1],
-      MOCK_COLORS[3],
-      MOCK_COLORS[2],
-      { name: 'Red', hex: '#ef4444' },
-    ],
-    sizes: ['S', 'M', 'L'],
-    material: 'Cotton Blend',
+    brand: 'Atomic Wear',
     tags: [],
-    rating: 4.7,
+    productType: 'physical',
+    images: [{ url: '/images/home/6.jpg', altText: 'Qube cap', sortOrder: 0, isPrimary: true }],
+    hasVariants: true,
+    variants: [
+      {
+        _id: 'v4a',
+        sku: 'HUL-001-BLK-S',
+        variantOptions: [
+          { name: 'Color', value: 'Obsidian Black' },
+          { name: 'Size', value: 'S' },
+        ],
+        price: 50999,
+        isActive: true,
+      },
+      {
+        _id: 'v4b',
+        sku: 'HUL-001-WHT-M',
+        variantOptions: [
+          { name: 'Color', value: 'Pure White' },
+          { name: 'Size', value: 'M' },
+        ],
+        price: 50999,
+        isActive: true,
+      },
+      {
+        _id: 'v4c',
+        sku: 'HUL-001-NVY-L',
+        variantOptions: [
+          { name: 'Color', value: 'Navy Blue' },
+          { name: 'Size', value: 'L' },
+        ],
+        price: 50999,
+        isActive: true,
+      },
+      {
+        _id: 'v4d',
+        sku: 'HUL-001-GRY-M',
+        variantOptions: [
+          { name: 'Color', value: 'Slate Gray' },
+          { name: 'Size', value: 'M' },
+        ],
+        price: 50999,
+        isActive: true,
+      },
+      {
+        _id: 'v4e',
+        sku: 'HUL-001-RED-L',
+        variantOptions: [
+          { name: 'Color', value: 'Red' },
+          { name: 'Size', value: 'L' },
+        ],
+        price: 50999,
+        isActive: true,
+      },
+    ],
+    variantOptionNames: ['Color', 'Size'],
+    material: 'Cotton Blend',
+    weight: 120,
+    weightUnit: 'g',
+    isFeatured: false,
+    avgRating: 4.7,
     reviewCount: 18,
-    variants: [],
+    minOrderQty: 1,
+    isActive: true,
+    stock: 0,
+    reserved: 0,
+    available: 0,
   },
   {
     id: '5',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     name: 'Stealth Wireless Pro',
+    shortDescription: 'High fidelity audio',
     description: 'High fidelity audio...',
     price: 154000.0,
-    images: ['/images/home/category-electronics.png'],
     category: 'Electronics',
-    stock: 25,
     sku: 'ELE-001',
     slug: 'stealth-wireless-pro',
-    colors: [MOCK_COLORS[0]],
-    sizes: [],
-    material: 'Plastic/Metal',
+    brand: 'Atomic Audio',
     tags: ['new-arrival'],
-    rating: 4.6,
+    productType: 'physical',
+    images: [
+      {
+        url: '/images/home/category-electronics.png',
+        altText: 'Stealth Wireless Pro',
+        sortOrder: 0,
+        isPrimary: true,
+      },
+    ],
+    hasVariants: true,
+    variants: [
+      {
+        _id: 'v5a',
+        sku: 'ELE-001-BLK',
+        variantOptions: [{ name: 'Color', value: 'Obsidian Black' }],
+        price: 154000,
+        isActive: true,
+      },
+    ],
+    variantOptionNames: ['Color'],
+    material: 'Plastic/Metal',
+    weight: 280,
+    weightUnit: 'g',
+    isFeatured: true,
+    avgRating: 4.6,
     reviewCount: 89,
-    variants: [],
+    minOrderQty: 1,
+    isActive: true,
+    stock: 25,
+    reserved: 0,
+    available: 25,
   },
 ];
 
 const CATEGORIES = ['Electronics', 'Accessories', 'Apparel', 'Kaftan', 'Hulla'];
 const SIZES = ['S', 'M', 'L', 'XL', 'XXL', 'ONE SIZE'];
 const MATERIALS = ['Cotton', 'Cotton Blend', 'Leather', 'Stainless Steel', 'Plastic/Metal'];
+
+// Build a unique set of ProductColor swatches from all products
+const ALL_COLORS: ProductColor[] = (() => {
+  const seen = new Set<string>();
+  const result: ProductColor[] = [];
+  for (const p of MOCK_PRODUCTS) {
+    for (const name of getUniqueColors(p)) {
+      if (!seen.has(name)) {
+        seen.add(name);
+        result.push(toProductColor(name));
+      }
+    }
+  }
+  return result;
+})();
 
 export function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -206,14 +451,20 @@ export function ProductsPage() {
     if (selectedCategories.length > 0)
       result = result.filter((p) => selectedCategories.includes(p.category));
     if (selectedSizes.length > 0)
-      result = result.filter((p) => p.sizes.some((s) => selectedSizes.includes(s)));
+      result = result.filter((p) => {
+        const sizes = getUniqueSizes(p);
+        return sizes.some((s) => selectedSizes.includes(s));
+      });
     if (selectedColors.length > 0)
-      result = result.filter((p) => p.colors.some((c) => selectedColors.includes(c.name)));
+      result = result.filter((p) => {
+        const colors = getUniqueColors(p);
+        return colors.some((c) => selectedColors.includes(c));
+      });
 
     // 4. Numeric & Boolean filters
     if (minPrice) result = result.filter((p) => p.price >= Number(minPrice));
     if (maxPrice) result = result.filter((p) => p.price <= Number(maxPrice));
-    if (inStockOnly) result = result.filter((p) => p.stock > 0);
+    if (inStockOnly) result = result.filter((p) => p.available > 0);
 
     // 5. Sorting
     const [sortField, sortDir] = sortValue.split('-');
@@ -312,7 +563,7 @@ export function ProductsPage() {
                   : [...selectedCategories, cat];
                 updateParams({ categories: newCat.length ? newCat : null });
               }}
-              availableColors={MOCK_COLORS}
+              availableColors={ALL_COLORS}
               selectedColors={selectedColors}
               onColorToggle={(color) => {
                 const newCol = selectedColors.includes(color)
