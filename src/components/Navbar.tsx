@@ -28,7 +28,6 @@ export function Navbar() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Hide on auth pages
-  if (AUTH_ROUTES.includes(location.pathname as any)) return null;
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -45,6 +44,7 @@ export function Navbar() {
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
+  if (AUTH_ROUTES.includes(location.pathname as any)) return null;
 
   const isDark = theme === 'dark';
 
