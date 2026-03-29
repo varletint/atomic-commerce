@@ -36,6 +36,7 @@ const NO_REFRESH_PATHS = [
   '/users/logout',
   '/users/forgot-password',
   '/users/reset-password',
+  '/users/resend-verification',
 ];
 
 function shouldSkipRefresh(url: string | undefined): boolean {
