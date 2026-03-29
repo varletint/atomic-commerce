@@ -15,7 +15,6 @@ import {
 import { ROUTES } from '@/config/routes';
 import { useAuthStore, useCartStore, useUIStore, useThemeStore } from '@/store';
 
-/* ── Route check: hide navbar on auth pages ─────── */
 const AUTH_ROUTES = [ROUTES.LOGIN, ROUTES.REGISTER, ROUTES.FORGOT_PASSWORD];
 
 export function Navbar() {
@@ -27,14 +26,9 @@ export function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Hide on auth pages
-
-  // Close mobile menu on route change
   useEffect(() => {
     closeAll();
   }, [location.pathname]);
-
-  // Close dropdown on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
