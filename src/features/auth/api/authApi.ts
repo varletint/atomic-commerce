@@ -32,5 +32,6 @@ export const authApi = {
       params: { token },
     }),
 
-  resendVerification: () => api.post<ApiResponse>(API_ENDPOINTS.AUTH.RESEND_VERIFICATION),
+  resendVerification: (email: string) =>
+    api.post<ApiResponse>(API_ENDPOINTS.AUTH.RESEND_VERIFICATION, { email }),
 };
