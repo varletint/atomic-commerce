@@ -56,7 +56,7 @@ export function useAuth() {
 
   // ── Resend Verification ──────────────────────────
   const resendVerificationMutation = useMutation({
-    mutationFn: () => authApi.resendVerification(),
+    mutationFn: (email: string) => authApi.resendVerification(email),
   });
 
   // ── Logout ───────────────────────────────────────
