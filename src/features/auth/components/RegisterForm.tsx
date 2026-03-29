@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
@@ -5,9 +6,11 @@ import { useAuth } from '../hooks/useAuth';
 import { registerSchema, type RegisterInput } from '@/schemas/authSchema';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import { ROUTES } from '@/config/routes';
 
 export function RegisterForm() {
   const { registerAsync, isRegistering } = useAuth();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -32,7 +35,7 @@ export function RegisterForm() {
   const onSubmit = async (data: RegisterInput) => {
     try {
       await registerAsync(data);
-      toast.success('Account created successfully!');
+      navigate(ROUTES.CHECK_EMAIL, { state: { email: data.email }, replace: true });
     } catch (error: any) {
       toast.error(error?.response?.data?.message || 'Registration failed. Please try again.');
     }
