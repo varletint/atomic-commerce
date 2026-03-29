@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@/config/routes';
 import { SEO } from '@/components/SEO';
-// import { RegisterForm } from '../components/RegisterForm';
-import { RegisterFormMultiStep } from '../components/RegisterFormMultiStep';
+import { RegisterForm } from '../components/RegisterForm';
+// import { RegisterFormMultiStep } from '../components/RegisterFormMultiStep';
 
 export function RegisterPage() {
   return (
@@ -14,7 +14,7 @@ export function RegisterPage() {
           <p className="text-gray-500">Create your account to start shopping our collection.</p>
         </div>
 
-        <RegisterFormMultiStep />
+        <RegisterForm />
 
         <div className="mt-8 text-center text-sm text-gray-500 border-t pt-6">
           Already have an account?{' '}
