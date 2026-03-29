@@ -924,7 +924,6 @@ hr {
   font-weight: 700;
   color: var(--color-text-inverse);
   background: var(--color-accent);
-  border-radius: 50%;
   flex-shrink: 0;
 }
 
