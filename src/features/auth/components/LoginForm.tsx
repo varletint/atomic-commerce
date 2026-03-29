@@ -39,9 +39,16 @@ export function LoginForm() {
       toast.success('Welcome back!');
       navigate(from, { replace: true });
     } catch (error) {
-      toast.error(
-        (error as any)?.response?.data?.message || 'Invalid email or password. Please try again.'
-      );
+      const res = (error as { response?: { data?: { code?: string; message?: string } } })?.response
+        ?.data;
+
+      if (res?.code === 'EMAIL_NOT_VERIFIED') {
+        toast.error('Please verify your email first.');
+        navigate(ROUTES.CHECK_EMAIL, { state: { email: data.email }, replace: true });
+        return;
+      }
+
+      toast.error(res?.message || 'Invalid email or password. Please try again.');
     }
   };
 
