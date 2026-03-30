@@ -1,28 +1,68 @@
-import type { BaseEntity } from './common';
-import type { CartItem } from './cart';
+import type { Address } from './user';
 
-export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+export type OrderStatus =
+  | 'PENDING'
+  | 'CONFIRMED'
+  | 'SHIPPED'
+  | 'DELIVERED'
+  | 'CANCELLED'
+  | 'FAILED';
+export type PaymentMethod =
+  | 'CARD'
+  | 'BANK_TRANSFER'
+  | 'WALLET'
+  | 'USSD'
+  | 'CASH_ON_DELIVERY'
+  | 'CASH_IN_STORE';
 
-export interface Order extends BaseEntity {
-  orderNumber: string;
-  items: CartItem[];
+export interface OrderItem {
+  product: string;
+  productName: string;
+  quantity: number;
+  pricePerUnit: number;
   subtotal: number;
-  tax: number;
-  shipping: number;
-  total: number;
-  status: OrderStatus;
-  shippingAddress: Address;
-  billingAddress: Address;
-  paymentMethod: string;
 }
 
-export interface Address {
-  firstName: string;
-  lastName: string;
-  address: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
-  phone: string;
+export interface StatusHistoryEntry {
+  status: OrderStatus;
+  timestamp: string;
+  note?: string;
+}
+
+export interface Order {
+  _id: string;
+  checkoutType: 'REGISTERED' | 'GUEST';
+  user?: string;
+  items: OrderItem[];
+  totalAmount: number;
+  deliveryFee: number;
+  status: OrderStatus;
+  idempotencyKey: string;
+  shippingAddress: Address;
+  statusHistory: StatusHistoryEntry[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Transaction {
+  _id: string;
+  order: string;
+  user?: string;
+  amount: number;
+  currency: string;
+  status: 'INITIATED' | 'PROCESSING' | 'SUCCESS' | 'FAILED' | 'REFUND_INITIATED' | 'REFUNDED';
+  paymentMethod: PaymentMethod;
+  provider: string;
+  providerRef?: string;
+  idempotencyKey: string;
+  failureReason?: string;
+  paidAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProcessPaymentResponse {
+  order: Order;
+  transaction: Transaction;
+  authorizationUrl: string;
 }
