@@ -1,15 +1,14 @@
-import api from "@/api/axios";
-import { API_ENDPOINTS } from "@/api/endpoints";
-import { Product } from "@/types";
-import { PaginatedResponse } from "@/types/api";
-import { ProductFilters } from "../types";
+import api from '@/api/axios';
+import { API_ENDPOINTS } from '@/api/endpoints';
+import type { Product } from '@/types';
+import type { PaginatedResponse } from '@/types/api';
+import type { ProductFilters } from '../types';
 
 export const productApi = {
   getProducts: async (filters?: ProductFilters) => {
-    const { data } = await api.get<PaginatedResponse<Product>>(
-      API_ENDPOINTS.PRODUCTS.LIST,
-      { params: filters },
-    );
+    const { data } = await api.get<PaginatedResponse<Product>>(API_ENDPOINTS.PRODUCTS.LIST, {
+      params: filters,
+    });
     return data;
   },
 

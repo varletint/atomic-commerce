@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useProduct } from '../hooks/useProducts';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ChevronRight, Star } from 'lucide-react';
 import { SEO } from '@/components/SEO';
@@ -28,133 +29,30 @@ function toProductColor(name: string): ProductColor {
   return { name, hex: COLOR_HEX_MAP[name] ?? '#888888' };
 }
 
-// Mock Data / Hooks
-// In a real app we'd use: const { data: product, isLoading } = useProduct(slug!);
-const MOCK_PRODUCT: Product = {
-  id: '2',
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-  name: 'Babban Riga',
-  shortDescription: 'Traditional elegance redefined',
-  description:
-    'Traditional elegance redefined. Hand-tailored from premium quality cotton, the Babban Riga features intricate embroidery and a relaxed, draped silhouette. Designed to offer both supreme comfort and undeniable presence for formal occasions. The attention to detail in the stitching makes every piece unique.',
-  price: 99000.0,
-  compareAtPrice: 105000.0,
-  category: 'Kaftan',
-  sku: 'KAF-001',
-  slug: 'babban-riga',
-  brand: 'Atomic Wear',
-  tags: ['new-arrival', 'premium'],
-  productType: 'physical',
-  images: [
-    { url: '/images/home/7.jpg', altText: 'Babban Riga front view', sortOrder: 0, isPrimary: true },
-    { url: '/images/home/6.jpg', altText: 'Babban Riga side view', sortOrder: 1, isPrimary: false },
-    {
-      url: '/images/home/category-apparel.png',
-      altText: 'Babban Riga detail',
-      sortOrder: 2,
-      isPrimary: false,
-    },
-  ],
-  hasVariants: true,
-  variants: [
-    {
-      _id: 'v1',
-      sku: 'KAF-001-BLK-S',
-      variantOptions: [
-        { name: 'Color', value: 'Obsidian Black' },
-        { name: 'Size', value: 'S' },
-      ],
-      price: 99000,
-      isActive: true,
-    },
-    {
-      _id: 'v2',
-      sku: 'KAF-001-BLK-M',
-      variantOptions: [
-        { name: 'Color', value: 'Obsidian Black' },
-        { name: 'Size', value: 'M' },
-      ],
-      price: 99000,
-      isActive: true,
-    },
-    {
-      _id: 'v3',
-      sku: 'KAF-001-BLK-L',
-      variantOptions: [
-        { name: 'Color', value: 'Obsidian Black' },
-        { name: 'Size', value: 'L' },
-      ],
-      price: 99000,
-      isActive: true,
-    },
-    {
-      _id: 'v4',
-      sku: 'KAF-001-WHT-M',
-      variantOptions: [
-        { name: 'Color', value: 'Pure White' },
-        { name: 'Size', value: 'M' },
-      ],
-      price: 99000,
-      isActive: true,
-    },
-    {
-      _id: 'v5',
-      sku: 'KAF-001-GRY-XL',
-      variantOptions: [
-        { name: 'Color', value: 'Slate Gray' },
-        { name: 'Size', value: 'XL' },
-      ],
-      price: 99000,
-      isActive: true,
-    },
-  ],
-  variantOptionNames: ['Color', 'Size'],
-  material: 'Premium Cotton',
-  weight: 850,
-  weightUnit: 'g',
-  careInstructions: 'Hand wash cold. Lay flat to dry. Do not bleach.',
-  isFeatured: false,
-  avgRating: 4.9,
-  reviewCount: 42,
-  minOrderQty: 1,
-  isActive: true,
-  stock: 12,
-  reserved: 0,
-  available: 12,
-};
+// Real Data Hook
+// We'll use: const { data: product, isLoading } = useProduct(slug!);
 
 export function ProductDetailsPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const addItem = useCartStore((state) => state.addItem);
 
-  // Load state
-  const [isLoading, setIsLoading] = useState(true);
-  const [product, setProduct] = useState<Product | null>(null);
-
-  // Variant state
-  const [selectedColor, setSelectedColor] = useState<string>('');
-  const [selectedSize, setSelectedSize] = useState<string>('');
-  const [quantity, setQuantity] = useState<number>(1);
-  const [error, setError] = useState<string>('');
-
-  useEffect(() => {
-    // Simulate fetching based on slug
-    setIsLoading(true);
-    const timer = setTimeout(() => {
-      setProduct(MOCK_PRODUCT);
-      const colors = getUniqueColors(MOCK_PRODUCT);
-      if (colors[0]) setSelectedColor(colors[0]);
-      setIsLoading(false);
-    }, 600);
-    return () => clearTimeout(timer);
-  }, [slug]);
+  // Fetch product from backend
+  const { data: product, isLoading } = useProduct(slug!);
 
   // Derive display data from variants
   const colorNames = product ? getUniqueColors(product) : [];
   const colorSwatches = colorNames.map(toProductColor);
   const sizes = product ? getUniqueSizes(product) : [];
+
+  // Variant state — default color comes from the fetched product
+  const [selectedColor, setSelectedColor] = useState<string>('');
+  const [selectedSize, setSelectedSize] = useState<string>('');
+  const [quantity, setQuantity] = useState<number>(1);
+  const [error, setError] = useState<string>('');
+
+  // Use the first color as default if none selected yet
+  const activeColor = selectedColor || colorNames[0] || '';
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -168,7 +66,7 @@ export function ProductDetailsPage() {
 
     // Construct the selectedVariant object
     const selectedVariant: Record<string, string> = {};
-    if (selectedColor) selectedVariant['Color'] = selectedColor;
+    if (activeColor) selectedVariant['Color'] = activeColor;
     if (selectedSize) selectedVariant['Size'] = selectedSize;
 
     addItem(product, quantity, selectedVariant);
@@ -188,7 +86,7 @@ export function ProductDetailsPage() {
     setError('');
 
     const selectedVariant: Record<string, string> = {};
-    if (selectedColor) selectedVariant['Color'] = selectedColor;
+    if (activeColor) selectedVariant['Color'] = activeColor;
     if (selectedSize) selectedVariant['Size'] = selectedSize;
 
     addItem(product, quantity, selectedVariant);
@@ -322,7 +220,7 @@ export function ProductDetailsPage() {
               <div className="mb-10 p-6 bg-[var(--color-bg-subtle)] border border-[var(--color-border)]">
                 <VariantSelector
                   colors={colorSwatches}
-                  selectedColor={selectedColor}
+                  selectedColor={activeColor}
                   onColorSelect={(c) => setSelectedColor(c)}
                   sizes={sizes}
                   selectedSize={selectedSize}
@@ -352,7 +250,9 @@ export function ProductDetailsPage() {
                   >
                     {product.available === 0 ? 'Out of Stock' : 'Add to Cart'}
                   </button> */}
-                  <Button>{product.available === 0 ? 'Out of Stock' : 'Add to Cart'}</Button>
+                  <Button onClick={handleAddToCart} disabled={product.available === 0}>
+                    {product.available === 0 ? 'Out of Stock' : 'Add to Cart'}
+                  </Button>
                 </div>
 
                 {/* Error message slot */}
@@ -373,7 +273,13 @@ export function ProductDetailsPage() {
                   Buy It Now
                 </button> */}
 
-                <Button> Buy It Now </Button>
+                <Button
+                  variant="secondary"
+                  onClick={handleBuyItNow}
+                  disabled={product.available === 0}
+                >
+                  Buy It Now
+                </Button>
               </div>
 
               <div className="flex items-center gap-2 mb-10 text-xs text-[var(--color-text-muted)] tracking-wider">

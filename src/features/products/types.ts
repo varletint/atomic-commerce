@@ -13,4 +13,6 @@ export interface ProductFilters {
   material?: string;
   inStock?: boolean;
   tags?: string[];
+  page?: number;
+  limit?: number;
 }

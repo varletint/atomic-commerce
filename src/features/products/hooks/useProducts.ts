@@ -1,7 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
-import { QUERY_KEYS } from "@/constants";
-import { productApi } from "../api/productApi";
-import { ProductFilters } from "../types";
+import { useQuery } from '@tanstack/react-query';
+import { QUERY_KEYS } from '@/constants';
+import { productApi } from '../api/productApi';
+import type { ProductFilters } from '../types';
 
 export function useProducts(filters?: ProductFilters) {
   return useQuery({

@@ -35,7 +35,7 @@ export function CartPage() {
           </p>
           <Link
             to={ROUTES.PRODUCTS}
-            className="h-12 px-8 bg-[var(--color-text-heading)] text-[var(--color-bg)] font-bold uppercase tracking-widest text-sm flex items-center justify-center hover:bg-[var(--color-accent)] hover:text-[var(--color-text-inverse)] transition-colors"
+            className="h-12 px-8 bg-[var(--color-text-heading)] !text-[var(--color-bg)] font-bold uppercase tracking-widest text-sm flex items-center justify-center hover:bg-[var(--color-accent)] hover:text-[var(--color-text-inverse)] transition-colors"
           >
             Continue Shopping
           </Link>
@@ -81,12 +81,12 @@ export function CartPage() {
 
             {/* ── Right Column: Order Summary ── */}
             <div className="lg:sticky lg:top-24 h-fit">
-              <div className="bg-[var(--color-bg-subtle)] border border-[var(--color-border)] p-6 sm:p-8">
+              <div className="bg-[var(--color-bg-subtle)] border border-[var(--color-border)] p-2 sm:p-8">
                 <h2 className="text-lg font-black uppercase tracking-widest text-[var(--color-text-heading)] mb-6 border-b border-[var(--color-border)] pb-4">
                   Order Summary
                 </h2>
 
-                <div className="flex flex-col gap-4 text-sm font-medium mb-6">
+                <div className="flex flex-col gap-4 text-sm font-medium mb-6 p-4">
                   <div className="flex justify-between text-[var(--color-text)]">
                     <span>Subtotal</span>
                     <span className="text-[var(--color-text-heading)] font-bold">
@@ -120,7 +120,7 @@ export function CartPage() {
 
                 <Link
                   to={ROUTES.CHECKOUT}
-                  className="w-full h-14 bg-[var(--color-accent)] text-[var(--color-text-inverse)] font-black uppercase tracking-[0.15em] text-sm flex items-center justify-center gap-3 hover:bg-[var(--color-accent-hover)] transition-colors group"
+                  className="w-full h-14 bg-[var(--color-accent)] !text-[var(--color-text-inverse)] no-underline font-black uppercase tracking-[0.15em] text-sm flex items-center justify-center gap-3 hover:bg-[var(--color-accent-hover)] transition-colors group"
                 >
                   Proceed to Checkout
                   <ArrowRight
@@ -134,13 +134,13 @@ export function CartPage() {
                     Secure Checkout
                   </p>
                   <div className="flex items-center justify-center gap-3 opacity-60">
-                    <div className="w-10 h-6 bg-[var(--color-border-strong)] rounded flex justify-center items-center text-[0.5rem] font-bold text-[var(--color-bg)]">
+                    <div className="w-10 h-6 bg-[#1a1f71] rounded flex justify-center items-center text-[0.5rem] font-bold text-white">
                       VISA
                     </div>
-                    <div className="w-10 h-6 bg-[var(--color-border-strong)] rounded flex justify-center items-center text-[0.5rem] font-bold text-[var(--color-bg)]">
+                    <div className="w-10 h-6 bg-[#eb001b] rounded flex justify-center items-center text-[0.5rem] font-bold text-white">
                       MC
                     </div>
-                    <div className="w-10 h-6 bg-[var(--color-border-strong)] rounded flex justify-center items-center text-[0.5rem] font-bold text-[var(--color-bg)]">
+                    <div className="w-10 h-6 bg-[#006fcf] rounded flex justify-center items-center text-[0.5rem] font-bold text-white">
                       AMEX
                     </div>
                   </div>
