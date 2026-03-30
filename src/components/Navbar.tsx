@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import {
   Menu,
@@ -26,20 +26,7 @@ export function Navbar() {
   const { isMobileMenuOpen, toggleMobileMenu, closeAll } = useUIStore();
   const { theme, toggleTheme } = useThemeStore();
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    closeAll();
-  }, [location.pathname]);
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setDropdownOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, []);
   if (AUTH_ROUTES.includes(location.pathname as any)) return null;
 
   const isDark = theme === 'dark';
@@ -118,7 +105,7 @@ export function Navbar() {
 
             {/* Auth */}
             {isAuthenticated ? (
-              <div className="navbar__user" ref={dropdownRef}>
+              <div className="navbar__user">
                 <button
                   type="button"
                   className="navbar__avatar-btn"
@@ -134,40 +121,43 @@ export function Navbar() {
                 </button>
 
                 {dropdownOpen && (
-                  <div className="navbar__dropdown animate-fadeIn">
-                    <div className="navbar__dropdown-header">
-                      <span className="navbar__dropdown-name">{user?.name}</span>
-                      <span className="navbar__dropdown-email">{user?.email}</span>
+                  <>
+                    {/* Transparent Overlay for tracking clicks outside */}
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setDropdownOpen(false)}
+                      aria-hidden="true"
+                    />
+                    <div className="navbar__dropdown animate-fadeIn relative z-50">
+                      <div className="navbar__dropdown-header">
+                        <span className="navbar__dropdown-name">{user?.name}</span>
+                        <span className="navbar__dropdown-email">{user?.email}</span>
+                      </div>
+                      <div className="navbar__dropdown-divider" />
+                      <Link
+                        to={ROUTES.PROFILE}
+                        className="navbar__dropdown-item"
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        <User size={16} /> Profile
+                      </Link>
+                      <Link
+                        to={ROUTES.ORDERS}
+                        className="navbar__dropdown-item"
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        <Package size={16} /> My Orders
+                      </Link>
+                      <div className="navbar__dropdown-divider" />
+                      <button
+                        type="button"
+                        className="navbar__dropdown-item navbar__dropdown-item--danger"
+                        onClick={handleLogout}
+                      >
+                        <LogOut size={16} /> Logout
+                      </button>
                     </div>
-                    <div className="navbar__dropdown-divider" />
-                    <Link
-                      to={ROUTES.PROFILE}
-                      className="navbar__dropdown-item"
-                      onClick={() => setDropdownOpen(false)}
-                    >
-                      <User size={16} /> Profile
-                    </Link>
-                    <Link
-                      to={ROUTES.ORDERS}
-                      className="navbar__dropdown-item"
-                      onClick={() => setDropdownOpen(false)}
-                    >
-                      <Package size={16} /> My Orders
-                    </Link>
-                    <div className="navbar__dropdown-divider" />
-                    <button
-                      type="button"
-                      className="navbar__dropdown-item navbar__dropdown-item--danger"
-                      // onClick={() => {
-                      //   setDropdownOpen(false);
-                      //   useAuthStore.getState().clearAuth();
-                      // }
-                      // }
-                      onClick={handleLogout}
-                    >
-                      <LogOut size={16} /> Logout
-                    </button>
-                  </div>
+                  </>
                 )}
               </div>
             ) : (
@@ -200,6 +190,7 @@ export function Navbar() {
           <nav className="navbar__mobile-nav">
             <NavLink
               to={ROUTES.PRODUCTS}
+              onClick={closeAll}
               className={({ isActive }) =>
                 `navbar__mobile-link ${isActive ? 'navbar__mobile-link--active' : ''}`
               }
@@ -209,6 +200,7 @@ export function Navbar() {
             {isAuthenticated && (
               <NavLink
                 to={ROUTES.ORDERS}
+                onClick={closeAll}
                 className={({ isActive }) =>
                   `navbar__mobile-link ${isActive ? 'navbar__mobile-link--active' : ''}`
                 }
@@ -216,7 +208,7 @@ export function Navbar() {
                 Orders
               </NavLink>
             )}
-            <Link to={ROUTES.CART} className="navbar__mobile-link">
+            <Link to={ROUTES.CART} onClick={closeAll} className="navbar__mobile-link">
               Cart {itemCount > 0 && <span className="navbar__badge">{itemCount}</span>}
             </Link>
           </nav>
@@ -226,7 +218,7 @@ export function Navbar() {
           <div className="navbar__mobile-bottom">
             {isAuthenticated ? (
               <>
-                <Link to={ROUTES.PROFILE} className="navbar__mobile-link">
+                <Link to={ROUTES.PROFILE} onClick={closeAll} className="navbar__mobile-link">
                   Profile
                 </Link>
                 <button
@@ -239,10 +231,10 @@ export function Navbar() {
               </>
             ) : (
               <>
-                <Link to={ROUTES.LOGIN} className="navbar__mobile-link">
+                <Link to={ROUTES.LOGIN} onClick={closeAll} className="navbar__mobile-link">
                   Login
                 </Link>
-                <Link to={ROUTES.REGISTER} className="navbar__mobile-link">
+                <Link to={ROUTES.REGISTER} onClick={closeAll} className="navbar__mobile-link">
                   Register
                 </Link>
               </>
