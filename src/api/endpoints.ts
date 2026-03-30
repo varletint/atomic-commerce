@@ -37,6 +37,9 @@ export const API_ENDPOINTS = {
     DETAIL: (id: string) => `/orders/${id}`,
     CREATE: '/orders',
     CANCEL: (id: string) => `/orders/${id}/cancel`,
+    PROCESS_PAYMENT: (orderId: string) => `/orders/${orderId}/payment`,
+    VERIFY_PAYMENT: (orderId: string, reference: string) =>
+      `/orders/${orderId}/payment/verify/${reference}`,
   },
   PAYMENT: {
     INTENT: '/payment/intent',

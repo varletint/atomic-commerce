@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { ROUTES } from '@/config/routes';
 import { RegisterPage } from '@/features/auth/pages/RegisterPage';
 import { CheckEmailPage } from '@/features/auth/pages/CheckEmailPage';
@@ -9,13 +9,49 @@ import { ProductsPage } from '@/features/products/pages/ProductsPage';
 import { ProductDetailsPage } from '@/features/products/pages/ProductDetailsPage';
 import { CartPage } from '@/features/cart/pages/CartPage';
 import { ProfilePage } from '@/features/account/pages/ProfilePage';
+import { CheckoutPage } from '@/features/checkout/pages/CheckoutPage';
+import { PaymentCallbackPage } from '@/features/checkout/pages/PaymentCallbackPage';
 import { AuthGuard } from '@/guards/AuthGuard';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { SEO } from '@/components/SEO';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import './App.css';
 
+function GuestGuard({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading } = useAuth();
+  const location = useLocation();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[var(--color-bg)]">
+        <div className="animate-pulse text-[var(--color-text-muted)] text-sm font-bold uppercase tracking-widest">
+          Loading...
+        </div>
+      </div>
+    );
+  }
+
+  if (isAuthenticated) {
+    return <Navigate to={location.state?.from?.pathname || ROUTES.PROFILE} replace />;
+  }
+
+  return <>{children}</>;
+}
+
 function App() {
+  const { isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[var(--color-bg)]">
+        <div className="animate-pulse text-[var(--color-text-muted)] text-sm font-bold uppercase tracking-widest">
+          Loading...
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="page">
       <SEO
@@ -29,8 +65,22 @@ function App() {
           <Route path={ROUTES.PRODUCTS} element={<ProductsPage />} />
           <Route path="/products/:slug" element={<ProductDetailsPage />} />
           <Route path={ROUTES.CART} element={<CartPage />} />
-          <Route path={ROUTES.LOGIN} element={<LoginPage />} />
-          <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+          <Route
+            path={ROUTES.LOGIN}
+            element={
+              <GuestGuard>
+                <LoginPage />
+              </GuestGuard>
+            }
+          />
+          <Route
+            path={ROUTES.REGISTER}
+            element={
+              <GuestGuard>
+                <RegisterPage />
+              </GuestGuard>
+            }
+          />
           <Route path={ROUTES.CHECK_EMAIL} element={<CheckEmailPage />} />
           <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyEmailPage />} />
           <Route
@@ -38,6 +88,22 @@ function App() {
             element={
               <AuthGuard>
                 <ProfilePage />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path={ROUTES.CHECKOUT}
+            element={
+              <AuthGuard>
+                <CheckoutPage />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/checkout/verify"
+            element={
+              <AuthGuard>
+                <PaymentCallbackPage />
               </AuthGuard>
             }
           />

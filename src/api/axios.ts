@@ -1,5 +1,6 @@
 import axios from 'axios';
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import { useAuthStore } from '@/store';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
@@ -12,6 +13,7 @@ const api = axios.create({
 
 // ── Silent Refresh State ───────────────────────────
 let isRefreshing = false;
+let refreshFailed = false; // prevents loops after a failed refresh
 let failedQueue: {
   resolve: (value: unknown) => void;
   reject: (reason: unknown) => void;
@@ -26,6 +28,11 @@ function processQueue(error: unknown | null) {
     }
   });
   failedQueue = [];
+}
+
+/** Call this after a successful login/register to re-enable refresh */
+export function resetRefreshState() {
+  refreshFailed = false;
 }
 
 // Paths that should NEVER trigger a silent refresh
@@ -52,11 +59,12 @@ api.interceptors.response.use(
       _retry?: boolean;
     };
 
-    // Skip: not a 401, already retried, or a public/auth route
+    // Skip: not a 401, already retried, a public/auth route, or refresh already failed
     if (
       error.response?.status !== 401 ||
       originalRequest._retry ||
-      shouldSkipRefresh(originalRequest.url)
+      shouldSkipRefresh(originalRequest.url) ||
+      refreshFailed
     ) {
       return Promise.reject(error);
     }
@@ -77,7 +85,12 @@ api.interceptors.response.use(
       processQueue(null);
       return api(originalRequest);
     } catch (refreshError) {
+      refreshFailed = true;
       processQueue(refreshError);
+
+      // Clear auth state so the UI stops treating the user as logged-in
+      useAuthStore.getState().clearAuth();
+
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;
