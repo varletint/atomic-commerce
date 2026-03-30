@@ -18,7 +18,7 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
 
   // If the user was redirected to /login by a guard, return them back afterward
-  const from = location.state?.from?.pathname || ROUTES.HOME;
+  const from = location.state?.from?.pathname || ROUTES.PROFILE;
 
   const {
     register,

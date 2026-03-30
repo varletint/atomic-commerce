@@ -33,5 +33,13 @@ export const authApi = {
     }),
 
   resendVerification: (email: string) =>
-    api.post<ApiResponse>(API_ENDPOINTS.AUTH.RESEND_VERIFICATION, { email }),
+    api.post<ApiResponse & { retryAfter?: number }>(API_ENDPOINTS.AUTH.RESEND_VERIFICATION, {
+      email,
+    }),
+
+  forgotPassword: (email: string) =>
+    api.post<ApiResponse & { retryAfter?: number }>(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, { email }),
+
+  resetPassword: (data: { email: string; otp: string; password: string }) =>
+    api.post<ApiResponse>(API_ENDPOINTS.AUTH.RESET_PASSWORD, data),
 };

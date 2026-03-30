@@ -14,12 +14,14 @@ import {
 } from 'lucide-react';
 import { ROUTES } from '@/config/routes';
 import { useAuthStore, useCartStore, useUIStore, useThemeStore } from '@/store';
+import { useAuth } from '@/features/auth';
 
 const AUTH_ROUTES = [ROUTES.LOGIN, ROUTES.REGISTER, ROUTES.FORGOT_PASSWORD];
 
 export function Navbar() {
   const location = useLocation();
   const { user, isAuthenticated } = useAuthStore();
+  const { logout } = useAuth();
   const itemCount = useCartStore((s) => s.getItemCount());
   const { isMobileMenuOpen, toggleMobileMenu, closeAll } = useUIStore();
   const { theme, toggleTheme } = useThemeStore();
@@ -43,6 +45,17 @@ export function Navbar() {
   const isDark = theme === 'dark';
 
   const initial = user?.name?.charAt(0).toUpperCase() ?? '?';
+
+  const handleLogout = async () => {
+    try {
+      useAuthStore.getState().clearAuth();
+      useCartStore.getState().clearCart();
+      logout();
+      setDropdownOpen(false);
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
 
   return (
     <>
@@ -145,10 +158,12 @@ export function Navbar() {
                     <button
                       type="button"
                       className="navbar__dropdown-item navbar__dropdown-item--danger"
-                      onClick={() => {
-                        setDropdownOpen(false);
-                        useAuthStore.getState().clearAuth();
-                      }}
+                      // onClick={() => {
+                      //   setDropdownOpen(false);
+                      //   useAuthStore.getState().clearAuth();
+                      // }
+                      // }
+                      onClick={handleLogout}
                     >
                       <LogOut size={16} /> Logout
                     </button>
@@ -217,10 +232,7 @@ export function Navbar() {
                 <button
                   type="button"
                   className="navbar__mobile-link navbar__mobile-link--danger"
-                  onClick={() => {
-                    closeAll();
-                    useAuthStore.getState().clearAuth();
-                  }}
+                  onClick={handleLogout}
                 >
                   Logout
                 </button>

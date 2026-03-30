@@ -1,7 +1,9 @@
+import { useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/store';
 import { QUERY_KEYS } from '@/constants';
 import { authApi } from '../api/authApi';
+import { resetRefreshState } from '@/api/axios';
 import type { Address } from '@/types';
 
 export function useAuth() {
@@ -9,27 +11,39 @@ export function useAuth() {
   const { user, isAuthenticated, setUser, clearAuth } = useAuthStore();
 
   // ── GET /users/me ────────────────────────────────
-  // On mount, try to fetch the current user via the cookie.
-  // If the cookie is valid → hydrate the store.
-  // If 401 (and silent refresh also fails) → clear the store.
-  const { isLoading, isError: isMeError } = useQuery({
+  // Only fires when there's a persisted user (i.e. a previous session).
+  // Fresh visitors or logged-out users skip this entirely.
+  const meQuery = useQuery({
     queryKey: QUERY_KEYS.AUTH.ME,
     queryFn: async () => {
       const { data } = await authApi.getMe();
       return data.data;
     },
+    enabled: !!user,
     retry: false,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    select: (data) => {
-      if (data) setUser(data);
-      return data;
-    },
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
+
+  // Sync query result → Zustand (outside queryFn to avoid render loops)
+  useEffect(() => {
+    if (meQuery.data) {
+      setUser(meQuery.data);
+    }
+  }, [meQuery.data, setUser]);
+
+  useEffect(() => {
+    if (meQuery.isError) {
+      clearAuth();
+    }
+  }, [meQuery.isError, clearAuth]);
 
   // ── Login ────────────────────────────────────────
   const loginMutation = useMutation({
     mutationFn: (data: { email: string; password: string }) => authApi.login(data),
     onSuccess: ({ data }) => {
+      resetRefreshState();
       if (data.data) setUser(data.data);
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.AUTH.ME });
     },
@@ -40,6 +54,7 @@ export function useAuth() {
     mutationFn: (data: { name: string; email: string; password: string; address: Address }) =>
       authApi.register(data),
     onSuccess: ({ data }) => {
+      resetRefreshState();
       if (data.data) setUser(data.data);
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.AUTH.ME });
     },
@@ -59,6 +74,17 @@ export function useAuth() {
     mutationFn: (email: string) => authApi.resendVerification(email),
   });
 
+  // ── Forgot Password ──────────────────────────────
+  const forgotPasswordMutation = useMutation({
+    mutationFn: (email: string) => authApi.forgotPassword(email),
+  });
+
+  // ── Reset Password ───────────────────────────────
+  const resetPasswordMutation = useMutation({
+    mutationFn: (data: { email: string; otp: string; password: string }) =>
+      authApi.resetPassword(data),
+  });
+
   // ── Logout ───────────────────────────────────────
   const logoutMutation = useMutation({
     mutationFn: () => authApi.logout(),
@@ -72,8 +98,8 @@ export function useAuth() {
     // State
     user,
     isAuthenticated,
-    isLoading,
-    isMeError,
+    isLoading: meQuery.isLoading,
+    isMeError: meQuery.isError,
 
     // Mutations
     login: loginMutation.mutate,
@@ -95,7 +121,18 @@ export function useAuth() {
     verifyEmailError: verifyEmailMutation.error,
 
     resendVerification: resendVerificationMutation.mutate,
+    resendVerificationAsync: resendVerificationMutation.mutateAsync,
     isResendingVerification: resendVerificationMutation.isPending,
     resendVerificationError: resendVerificationMutation.error,
+
+    forgotPassword: forgotPasswordMutation.mutate,
+    forgotPasswordAsync: forgotPasswordMutation.mutateAsync,
+    isForgotPasswordPending: forgotPasswordMutation.isPending,
+    forgotPasswordError: forgotPasswordMutation.error,
+
+    resetPassword: resetPasswordMutation.mutate,
+    resetPasswordAsync: resetPasswordMutation.mutateAsync,
+    isResetPasswordPending: resetPasswordMutation.isPending,
+    resetPasswordError: resetPasswordMutation.error,
   };
 }
