@@ -21,6 +21,7 @@ export const API_ENDPOINTS = {
   },
   PRODUCTS: {
     LIST: '/products',
+    CREATE: '/products',
     DETAIL: (id: string) => `/products/${id}`,
     SEARCH: '/products/search',
     CATEGORIES: '/products/categories',
@@ -40,9 +41,15 @@ export const API_ENDPOINTS = {
     PROCESS_PAYMENT: (orderId: string) => `/orders/${orderId}/payment`,
     VERIFY_PAYMENT: (orderId: string, reference: string) =>
       `/orders/${orderId}/payment/verify/${reference}`,
+    TRACKING: (orderId: string) => `/orders/${orderId}/tracking`,
   },
   PAYMENT: {
     INTENT: '/payment/intent',
     CONFIRM: '/payment/confirm',
+  },
+  STORAGE: {
+    UPLOAD_URL: '/storage/upload-url',
+    CONFIRM: '/storage/confirm',
+    ROLLBACK: '/storage/rollback',
   },
 } as const;
