@@ -8,6 +8,8 @@ import { ROUTES } from '@/config/routes';
 import { SEO } from '@/components/SEO';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import { Select } from '@/components/ui/Select';
+import { NumberInput } from '@/components/ui/NumberInput';
 import { ImageUploader } from '../components/ImageUploader';
 import { useCreateProduct } from '../hooks/useCreateProduct';
 import { createProductSchema, type CreateProductFormValues } from '@/schemas/createProduct.schema';
@@ -115,16 +117,16 @@ export function CreateProductPage() {
                   {...register('brand')}
                 />
               </div>
-              <div>
-                <label className="input-label" htmlFor="productType">
-                  Product Type
-                </label>
-                <select id="productType" className="input-field" {...register('productType')}>
-                  <option value="physical">Physical</option>
-                  <option value="digital">Digital</option>
-                  <option value="service">Service</option>
-                </select>
-              </div>
+              <Select
+                label="Product Type"
+                options={[
+                  { value: 'physical', label: 'Physical' },
+                  { value: 'digital', label: 'Digital' },
+                  { value: 'service', label: 'Service' },
+                ]}
+                error={errors.productType?.message}
+                {...register('productType')}
+              />
               <Input
                 label="Short Description"
                 placeholder="Brief one-liner"
@@ -155,25 +157,22 @@ export function CreateProductPage() {
               Pricing
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Input
+              <NumberInput
                 label="Price (₦)"
-                type="number"
                 step="0.01"
                 placeholder="0.00"
                 error={errors.price?.message}
                 {...register('price')}
               />
-              <Input
+              <NumberInput
                 label="Compare-at Price"
-                type="number"
                 step="0.01"
                 placeholder="Optional"
                 error={errors.compareAtPrice?.message}
                 {...register('compareAtPrice')}
               />
-              <Input
+              <NumberInput
                 label="Cost Price"
-                type="number"
                 step="0.01"
                 placeholder="Optional"
                 error={errors.costPrice?.message}
@@ -196,16 +195,14 @@ export function CreateProductPage() {
               Inventory
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
+              <NumberInput
                 label="Initial Stock"
-                type="number"
                 placeholder="0"
                 error={errors.initialStock?.message}
                 {...register('initialStock')}
               />
-              <Input
+              <NumberInput
                 label="Minimum Order Qty"
-                type="number"
                 placeholder="1"
                 error={errors.minOrderQty?.message}
                 {...register('minOrderQty')}
@@ -233,25 +230,24 @@ export function CreateProductPage() {
               Shipping & Details
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Input
+              <NumberInput
                 label="Weight"
-                type="number"
                 step="0.01"
                 placeholder="Optional"
                 error={errors.weight?.message}
                 {...register('weight')}
               />
-              <div>
-                <label className="input-label" htmlFor="weightUnit">
-                  Weight Unit
-                </label>
-                <select id="weightUnit" className="input-field" {...register('weightUnit')}>
-                  <option value="g">Grams (g)</option>
-                  <option value="kg">Kilograms (kg)</option>
-                  <option value="lb">Pounds (lb)</option>
-                  <option value="oz">Ounces (oz)</option>
-                </select>
-              </div>
+              <Select
+                label="Weight Unit"
+                options={[
+                  { value: 'g', label: 'Grams (g)' },
+                  { value: 'kg', label: 'Kilograms (kg)' },
+                  { value: 'lb', label: 'Pounds (lb)' },
+                  { value: 'oz', label: 'Ounces (oz)' },
+                ]}
+                error={errors.weightUnit?.message}
+                {...register('weightUnit')}
+              />
               <Input
                 label="Material"
                 placeholder="e.g. Cotton, Leather"
