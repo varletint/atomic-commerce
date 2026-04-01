@@ -9,12 +9,12 @@ const PAYMENT_OPTIONS: {
   description: string;
   icon: React.ReactNode;
 }[] = [
-  {
-    id: 'CARD',
-    label: 'Card',
-    description: 'Visa, Mastercard, Verve',
-    icon: <CreditCard size={20} />,
-  },
+  // {
+  //   id: 'CARD',
+  //   label: 'Card',
+  //   description: 'Visa, Mastercard, Verve',
+  //   icon: <CreditCard size={20} />,
+  // },
   {
     id: 'BANK_TRANSFER',
     label: 'Bank Transfer',
@@ -22,7 +22,7 @@ const PAYMENT_OPTIONS: {
     icon: <Building2 size={20} />,
   },
   { id: 'WALLET', label: 'Wallet', description: 'Opay, PalmPay, etc.', icon: <Wallet size={20} /> },
-  { id: 'USSD', label: 'USSD', description: 'Pay via USSD code', icon: <Hash size={20} /> },
+  // { id: 'USSD', label: 'USSD', description: 'Pay via USSD code', icon: <Hash size={20} /> },
   {
     id: 'CASH_ON_DELIVERY',
     label: 'Cash on Delivery',
