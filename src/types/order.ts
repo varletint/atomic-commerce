@@ -66,3 +66,12 @@ export interface ProcessPaymentResponse {
   transaction: Transaction;
   authorizationUrl: string;
 }
+
+export interface TrackingEvent {
+  _id: string;
+  orderId: string;
+  status: OrderStatus;
+  location?: string;
+  description: string;
+  timestamp: string;
+}
