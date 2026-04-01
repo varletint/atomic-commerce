@@ -1,6 +1,7 @@
 export const ROUTES = {
   HOME: '/',
   PRODUCTS: '/products',
+  CREATE_PRODUCT: '/products/new',
   PRODUCT_DETAIL: (id: string) => `/products/${id}`,
   CART: '/cart',
   CHECKOUT: '/checkout',
@@ -10,6 +11,7 @@ export const ROUTES = {
   LOGIN: '/login',
   REGISTER: '/register',
   FORGOT_PASSWORD: '/forgot-password',
+  RESET_PASSWORD: '/reset-password',
   CHECK_EMAIL: '/check-email',
   VERIFY_EMAIL: '/verify-email',
   NOT_FOUND: '/404',
