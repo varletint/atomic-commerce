@@ -5,23 +5,32 @@ import { ROUTES } from '@/config/routes';
 import { SEO } from '@/components/SEO';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '../hooks/useAuth';
+import { useCooldown } from '../hooks/useCooldown';
 
 export function CheckEmailPage() {
   const location = useLocation();
   const email = (location.state as { email?: string })?.email;
-  const { resendVerification, isResendingVerification } = useAuth();
+  const { resendVerificationAsync, isResendingVerification } = useAuth();
+  const { remainingSeconds, isCoolingDown, startCooldown } = useCooldown('resend-verification');
 
-  const handleResend = () => {
+  const handleResend = async () => {
     if (!email) {
       toast.error('No email address available. Please register again.');
       return;
     }
 
-    resendVerification(email, {
-      onSuccess: () => toast.success('Verification email resent! Check your inbox.'),
-      onError: (err: any) =>
-        toast.error(err?.response?.data?.error || 'Failed to resend. Please try again.'),
-    });
+    try {
+      const response = await resendVerificationAsync(email);
+      const retryAfter = response?.data?.retryAfter ?? 60;
+      startCooldown(retryAfter);
+      toast.success('Verification email resent! Check your inbox.');
+    } catch (err: any) {
+      const retryAfter = err?.response?.data?.retryAfter;
+      if (retryAfter) {
+        startCooldown(retryAfter);
+      }
+      toast.error(err?.response?.data?.error || 'Failed to resend. Please try again.');
+    }
   };
 
   return (
@@ -71,10 +80,11 @@ export function CheckEmailPage() {
           <Button
             onClick={handleResend}
             isLoading={isResendingVerification}
+            disabled={isCoolingDown}
             className="w-full"
             variant="outline"
           >
-            Resend Verification Email
+            {isCoolingDown ? `Resend in ${remainingSeconds}s` : 'Resend Verification Email'}
           </Button>
 
           <Link
