@@ -71,9 +71,9 @@ function App() {
           <Route
             path={ROUTES.CREATE_PRODUCT}
             element={
-              <AuthGuard>
-                <CreateProductPage />
-              </AuthGuard>
+              // <AuthGuard>
+              <CreateProductPage />
+              // </AuthGuard>
             }
           />
           <Route path="/products/:slug" element={<ProductDetailsPage />} />
