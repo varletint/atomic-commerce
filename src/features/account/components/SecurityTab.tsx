@@ -3,21 +3,35 @@ import { ShieldCheck, ShieldAlert, KeyRound, CheckCircle2, XCircle } from 'lucid
 import { ROUTES } from '@/config/routes';
 import { useProfile } from '../hooks/useProfile';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useCooldown } from '@/features/auth/hooks/useCooldown';
 import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
 
 export function SecurityTab() {
   const { user } = useProfile();
-  const { resendVerification, isResendingVerification } = useAuth();
+  const { resendVerificationAsync, isResendingVerification } = useAuth();
+  const { remainingSeconds, isCoolingDown, startCooldown } = useCooldown(
+    'resend-verification-security'
+  );
 
   const isVerified = user?.isEmailVerified ?? false;
 
-  const handleResendVerification = () => {
+  const handleResendVerification = async () => {
     if (!user?.email) return;
-    resendVerification(user.email, {
-      onSuccess: () => toast.success('Verification email sent! Check your inbox.'),
-      onError: () => toast.error('Failed to send verification email. Try again later.'),
-    });
+    try {
+      const response = await resendVerificationAsync(user.email);
+      const retryAfter = response?.data?.retryAfter ?? 60;
+      startCooldown(retryAfter);
+      toast.success('Verification email sent! Check your inbox.');
+    } catch (err: any) {
+      const retryAfter = err?.response?.data?.retryAfter;
+      if (retryAfter) {
+        startCooldown(retryAfter);
+      }
+      toast.error(
+        err?.response?.data?.error || 'Failed to send verification email. Try again later.'
+      );
+    }
   };
 
   return (
@@ -68,8 +82,9 @@ export function SecurityTab() {
               variant="secondary"
               onClick={handleResendVerification}
               isLoading={isResendingVerification}
+              disabled={isCoolingDown}
             >
-              RESEND VERIFICATION EMAIL
+              {isCoolingDown ? `RESEND IN ${remainingSeconds}s` : 'RESEND VERIFICATION EMAIL'}
             </Button>
           </div>
         )}
