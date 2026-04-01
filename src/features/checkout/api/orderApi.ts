@@ -42,4 +42,9 @@ export const orderApi = {
 
   cancelOrder: (orderId: string, reason: string) =>
     api.patch<ApiResponse<Order>>(API_ENDPOINTS.ORDERS.CANCEL(orderId), { reason }),
+
+  getTrackingEvents: (orderId: string) =>
+    api.get<ApiResponse<import('@/types/order').TrackingEvent[]>>(
+      API_ENDPOINTS.ORDERS.TRACKING(orderId)
+    ),
 };
