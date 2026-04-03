@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -27,6 +27,7 @@ export function CreateProductPage() {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<CreateProductFormValues>({
     resolver: zodResolver(createProductSchema) as any,
@@ -117,15 +118,24 @@ export function CreateProductPage() {
                   {...register('brand')}
                 />
               </div>
-              <Select
-                label="Product Type"
-                options={[
-                  { value: 'physical', label: 'Physical' },
-                  { value: 'digital', label: 'Digital' },
-                  { value: 'service', label: 'Service' },
-                ]}
-                error={errors.productType?.message}
-                {...register('productType')}
+              <Controller
+                name="productType"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    label="Product Type"
+                    options={[
+                      { value: 'physical', label: 'Physical' },
+                      { value: 'digital', label: 'Digital' },
+                      { value: 'service', label: 'Service' },
+                    ]}
+                    value={field.value}
+                    onChange={(e) => field.onChange(e.target.value)}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    error={errors.productType?.message}
+                  />
+                )}
               />
               <Input
                 label="Short Description"
@@ -237,16 +247,25 @@ export function CreateProductPage() {
                 error={errors.weight?.message}
                 {...register('weight')}
               />
-              <Select
-                label="Weight Unit"
-                options={[
-                  { value: 'g', label: 'Grams (g)' },
-                  { value: 'kg', label: 'Kilograms (kg)' },
-                  { value: 'lb', label: 'Pounds (lb)' },
-                  { value: 'oz', label: 'Ounces (oz)' },
-                ]}
-                error={errors.weightUnit?.message}
-                {...register('weightUnit')}
+              <Controller
+                name="weightUnit"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    label="Weight Unit"
+                    options={[
+                      { value: 'g', label: 'Grams (g)' },
+                      { value: 'kg', label: 'Kilograms (kg)' },
+                      { value: 'lb', label: 'Pounds (lb)' },
+                      { value: 'oz', label: 'Ounces (oz)' },
+                    ]}
+                    value={field.value}
+                    onChange={(e) => field.onChange(e.target.value)}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    error={errors.weightUnit?.message}
+                  />
+                )}
               />
               <Input
                 label="Material"
