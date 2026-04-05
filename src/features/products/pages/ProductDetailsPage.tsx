@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useProduct } from '../hooks/useProducts';
+import { useProductBySlug } from '../hooks/useProducts';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ChevronRight, Star } from 'lucide-react';
 import { SEO } from '@/components/SEO';
@@ -14,7 +14,7 @@ import { QuantitySelector } from '../components/QuantitySelector';
 import { ProductAccordion } from '../components/ProductAccordion';
 
 // Types + helpers
-import type { Product, ProductColor } from '@/types';
+import type { ProductColor } from '@/types';
 import { getUniqueColors, getUniqueSizes } from '@/types';
 import { Button } from '@/components/ui/Button';
 
@@ -29,16 +29,12 @@ function toProductColor(name: string): ProductColor {
   return { name, hex: COLOR_HEX_MAP[name] ?? '#888888' };
 }
 
-// Real Data Hook
-// We'll use: const { data: product, isLoading } = useProduct(slug!);
-
 export function ProductDetailsPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const addItem = useCartStore((state) => state.addItem);
 
-  // Fetch product from backend
-  const { data: product, isLoading } = useProduct(slug!);
+  const { data: product, isLoading } = useProductBySlug(slug!);
 
   // Derive display data from variants
   const colorNames = product ? getUniqueColors(product) : [];
@@ -123,7 +119,7 @@ export function ProductDetailsPage() {
     <>
       <SEO
         title={`${product.name} — Atomic Order`}
-        description={product.shortDescription ?? product.description.substring(0, 150)}
+        description={product.shortDescription ?? product.description?.substring(0, 150) ?? ''}
       />
 
       <div className="bg-[var(--color-bg)] min-h-screen pt-4 pb-24">
