@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useAuthStore } from '@/store';
+import { useAuthStore, useCartStore } from '@/store';
 import { QUERY_KEYS } from '@/constants';
 import { authApi } from '../api/authApi';
 import { resetRefreshState } from '@/api/axios';
@@ -42,10 +42,15 @@ export function useAuth() {
   // ── Login ────────────────────────────────────────
   const loginMutation = useMutation({
     mutationFn: (data: { email: string; password: string }) => authApi.login(data),
-    onSuccess: ({ data }) => {
+    onSuccess: async ({ data }) => {
       resetRefreshState();
       if (data.data) setUser(data.data);
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.AUTH.ME });
+
+      // Merge local guest cart → server, then hydrate from server
+      const cart = useCartStore.getState();
+      await cart.mergeLocalCartToServer();
+      await cart.syncCartFromServer();
     },
   });
 
@@ -53,10 +58,15 @@ export function useAuth() {
   const registerMutation = useMutation({
     mutationFn: (data: { name: string; email: string; password: string; address: Address }) =>
       authApi.register(data),
-    onSuccess: ({ data }) => {
+    onSuccess: async ({ data }) => {
       resetRefreshState();
       if (data.data) setUser(data.data);
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.AUTH.ME });
+
+      // Merge local guest cart → server, then hydrate from server
+      const cart = useCartStore.getState();
+      await cart.mergeLocalCartToServer();
+      await cart.syncCartFromServer();
     },
   });
 
