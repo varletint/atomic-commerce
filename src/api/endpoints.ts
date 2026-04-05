@@ -23,6 +23,7 @@ export const API_ENDPOINTS = {
     LIST: '/products',
     CREATE: '/products',
     DETAIL: (id: string) => `/products/${id}`,
+    DETAIL_BY_SLUG: (slug: string) => `/products/slug/${slug}`,
     SEARCH: '/products/search',
     CATEGORIES: '/products/categories',
   },
@@ -31,7 +32,7 @@ export const API_ENDPOINTS = {
     ADD: '/cart/items',
     UPDATE: (id: string) => `/cart/items/${id}`,
     REMOVE: (id: string) => `/cart/items/${id}`,
-    CLEAR: '/cart/clear',
+    CLEAR: '/cart',
   },
   ORDERS: {
     LIST: '/orders',
