@@ -17,3 +17,11 @@ export function useProduct(id: string) {
     enabled: !!id,
   });
 }
+
+export function useProductBySlug(slug: string) {
+  return useQuery({
+    queryKey: QUERY_KEYS.PRODUCTS.DETAIL_BY_SLUG(slug),
+    queryFn: () => productApi.getProductBySlug(slug),
+    enabled: !!slug,
+  });
+}
