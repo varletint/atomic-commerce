@@ -33,8 +33,15 @@ export const productApi = {
   },
 
   getProduct: async (id: string) => {
-    const { data } = await api.get<Product>(API_ENDPOINTS.PRODUCTS.DETAIL(id));
-    return data;
+    const { data } = await api.get<ApiResponse<Product>>(API_ENDPOINTS.PRODUCTS.DETAIL(id));
+    return data.data;
+  },
+
+  getProductBySlug: async (slug: string) => {
+    const { data } = await api.get<ApiResponse<Product>>(
+      API_ENDPOINTS.PRODUCTS.DETAIL_BY_SLUG(slug)
+    );
+    return data.data;
   },
 
   searchProducts: async (query: string) => {
