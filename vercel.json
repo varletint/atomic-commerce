@@ -1,19 +1,19 @@
 {
-  "rewrites": [
-    {
-      "source": "/((?!api/).*)",
-      "has": [
+    "rewrites": [
         {
-          "type": "header",
-          "key": "user-agent",
-          "value": ".*(whatsapp|facebookexternalhit|facebot|twitterbot|linkedinbot|telegrambot|slackbot|discordbot|googlebot|bingbot|applebot|pinterest).*"
+            "source": "/((?!api/).*)",
+            "has": [
+                {
+                    "type": "header",
+                    "key": "user-agent",
+                    "value": ".*(whatsapp|facebookexternalhit|twitterbot|linkedinbot|telegrambot|slackbot|googlebot|bingbot).*"
+                }
+            ],
+            "destination": "/api/og"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
         }
-      ],
-      "destination": "/api/og"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ]
+    ]
 }
