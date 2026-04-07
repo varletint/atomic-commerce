@@ -1,4 +1,4 @@
-import { StateStorage } from 'zustand/middleware';
+import type { StateStorage } from 'zustand/middleware';
 
 // Custom storage with error handling
 export const customStorage: StateStorage = {
