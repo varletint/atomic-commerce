@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CreditCard, Building2, Wallet, Hash, Truck, Store } from 'lucide-react';
+import { Building2, Wallet, Truck, Store } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import type { PaymentMethod } from '@/types/order';
 
