@@ -1,26 +1,32 @@
-import { env } from "@/config";
+import { env } from '@/config';
+
+declare global {
+  interface Window {
+    gtag?: (...args: any[]) => void;
+  }
+}
 
 class AnalyticsService {
   track(event: string, properties?: Record<string, unknown>) {
     if (!env.isProduction) {
-      console.log("Analytics:", event, properties);
+      console.log('Analytics:', event, properties);
       return;
     }
 
     // Implement your analytics provider (GA, Mixpanel, etc.)
     if (window.gtag) {
-      window.gtag("event", event, properties);
+      window.gtag('event', event, properties);
     }
   }
 
   page(path: string) {
     if (!env.isProduction) {
-      console.log("Page view:", path);
+      console.log('Page view:', path);
       return;
     }
 
     if (window.gtag) {
-      window.gtag("config", env.googleAnalyticsId, {
+      window.gtag('config', env.googleAnalyticsId, {
         page_path: path,
       });
     }
