@@ -21,9 +21,9 @@ export const authApi = {
   register: (data: RegisterPayload) =>
     api.post<ApiResponse<User>>(API_ENDPOINTS.AUTH.REGISTER, data),
 
-  logout: () => api.post<ApiResponse>(API_ENDPOINTS.AUTH.LOGOUT),
+  logout: () => api.post<ApiResponse<void>>(API_ENDPOINTS.AUTH.LOGOUT),
 
-  refreshTokens: () => api.post<ApiResponse>(API_ENDPOINTS.AUTH.REFRESH),
+  refreshTokens: () => api.post<ApiResponse<void>>(API_ENDPOINTS.AUTH.REFRESH),
 
   getMe: () => api.get<ApiResponse<User>>(API_ENDPOINTS.AUTH.ME),
 
@@ -33,13 +33,15 @@ export const authApi = {
     }),
 
   resendVerification: (email: string) =>
-    api.post<ApiResponse & { retryAfter?: number }>(API_ENDPOINTS.AUTH.RESEND_VERIFICATION, {
+    api.post<ApiResponse<void> & { retryAfter?: number }>(API_ENDPOINTS.AUTH.RESEND_VERIFICATION, {
       email,
     }),
 
   forgotPassword: (email: string) =>
-    api.post<ApiResponse & { retryAfter?: number }>(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, { email }),
+    api.post<ApiResponse<void> & { retryAfter?: number }>(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, {
+      email,
+    }),
 
   resetPassword: (data: { email: string; otp: string; password: string }) =>
-    api.post<ApiResponse>(API_ENDPOINTS.AUTH.RESET_PASSWORD, data),
+    api.post<ApiResponse<void>>(API_ENDPOINTS.AUTH.RESET_PASSWORD, data),
 };
