@@ -1,5 +1,5 @@
 import { useCartStore } from '@/store';
-import { Product } from '@/types';
+import type { Product } from '@/types';
 
 export function useCart() {
   const { items, addItem, removeItem, updateQuantity, clearCart, getTotal, getItemCount } =
