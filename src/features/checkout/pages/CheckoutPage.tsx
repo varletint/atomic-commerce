@@ -75,7 +75,7 @@ export function CheckoutPage() {
       const order = orderRes.data;
       if (!order) throw new Error('Order creation failed');
 
-      const paymentIdempotencyKey = uuidv4();
+      const paymentIdempotencyKey = crypto.randomUUID();
       const callbackUrl = `${window.location.origin}/checkout/verify?orderId=${order._id}&reference=${paymentIdempotencyKey}`;
 
       const { data: paymentRes } = await orderApi.processPayment(order._id, {
