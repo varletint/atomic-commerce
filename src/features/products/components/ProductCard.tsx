@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ShoppingBag, Star } from 'lucide-react';
 import type { Product, ProductColor } from '@/types';
-import { getPrimaryImageUrl, getUniqueColors, getUniqueSizes } from '@/types';
+import { getPrimaryImageUrl, getUniqueSizes } from '@/types';
 import { formatCurrency } from '@/utils';
 
 interface ProductCardProps {
