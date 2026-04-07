@@ -107,7 +107,10 @@ export function ProductsPage() {
 
   return (
     <>
-      <SEO title={`${selectedCategory || 'All'} Products — Atomic Order`} />
+      <SEO
+        title={`${selectedCategory || 'All'} Products — Atomic Order`}
+        description={`Browse our selection of ${selectedCategory || 'all'} products.`}
+      />
 
       <div className="bg-[var(--color-bg)] min-h-screen pt-8 pb-20">
         <div className="container">
