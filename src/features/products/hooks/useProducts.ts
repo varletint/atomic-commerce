@@ -5,7 +5,7 @@ import type { ProductFilters } from '../types';
 
 export function useProducts(filters?: ProductFilters) {
   return useQuery({
-    queryKey: QUERY_KEYS.PRODUCTS.LIST(filters),
+    queryKey: QUERY_KEYS.PRODUCTS.LIST(filters as Record<string, unknown> | undefined),
     queryFn: () => productApi.getProducts(filters),
   });
 }
