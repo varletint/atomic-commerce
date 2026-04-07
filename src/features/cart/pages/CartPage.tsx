@@ -21,7 +21,10 @@ export function CartPage() {
   if (isCartEmpty) {
     return (
       <>
-        <SEO title="Your Cart — Atomic Order" />
+        <SEO
+          title="Your Cart — Atomic Order"
+          description="Review items in your cart before checkout."
+        />
         <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 bg-[var(--color-bg)]">
           <div className="w-20 h-20 bg-[var(--color-bg-subtle)] rounded-full flex items-center justify-center mb-6 text-[var(--color-text-muted)]">
             <ShoppingBag size={32} />
@@ -46,7 +49,10 @@ export function CartPage() {
 
   return (
     <>
-      <SEO title={`Cart (${itemCount}) — Atomic Order`} />
+      <SEO
+        title={`Cart (${itemCount}) — Atomic Order`}
+        description="Review items in your cart before checkout."
+      />
 
       <div className="bg-[var(--color-bg)] min-h-screen pt-8 pb-24">
         <div className="container max-w-7xl">
