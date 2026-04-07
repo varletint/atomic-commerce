@@ -1,9 +1,9 @@
-import { StateCreator, StoreMutatorIdentifier } from 'zustand';
+import type { StateCreator, StoreMutatorIdentifier } from 'zustand';
 
 type Logger = <
   T,
   Mps extends [StoreMutatorIdentifier, unknown][] = [],
-  Mcs extends [StoreMutatorIdentifier, unknown][] = [],
+  Mcs extends [StoreMutatorIdentifier, unknown][] = []
 >(
   f: StateCreator<T, Mps, Mcs>,
   name?: string
@@ -14,7 +14,7 @@ type LoggerImpl = <T>(f: StateCreator<T, [], []>, name?: string) => StateCreator
 const loggerImpl: LoggerImpl = (f, name) => (set, get, store) => {
   const loggedSet: typeof set = (...args) => {
     const prevState = get();
-    set(...args);
+    (set as any)(...args);
     const nextState = get();
 
     if (import.meta.env.DEV) {
