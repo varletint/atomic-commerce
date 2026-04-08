@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOrders } from '../hooks/useOrders';
 import { OrderStatusPill } from '../components/OrderStatusPill';
+import { formatCurrency } from '@/utils';
 
 export function OrdersPage() {
   const [page, setPage] = useState(1);
@@ -74,9 +75,7 @@ export function OrdersPage() {
                   <div className="text-xs text-[var(--color-text-muted)] font-bold mb-1 uppercase tracking-widest">
                     Total Amount
                   </div>
-                  <div className="font-medium text-sm">
-                    NGN {(order.totalAmount / 100).toLocaleString()}
-                  </div>
+                  <div className="font-medium text-sm">{formatCurrency(order.totalAmount)}</div>
                 </div>
                 <div className="flex items-center">
                   <OrderStatusPill status={order.status} />

@@ -4,6 +4,7 @@ import { useOrderDetails } from '../hooks/useOrders';
 import { useOrderTracking } from '../hooks/useOrderTracking';
 import { OrderStatusPill } from '../components/OrderStatusPill';
 import { ROUTES } from '@/config/routes';
+import { formatCurrency } from '@/utils';
 
 const MAIN_STEPS = ['PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED'];
 
@@ -46,13 +47,10 @@ export function OrderDetailPage() {
     );
   }
 
-  // Calculate current progress index correctly for FAILED/CANCELLED too
   let activeIndex = MAIN_STEPS.indexOf(order.status);
 
-  // If cancelled/failed, we just show progress up to where it failed
   if (activeIndex === -1) {
     if (order.status === 'CANCELLED' || order.status === 'FAILED') {
-      // Find the last known good status from history
       const lastGood = order.statusHistory
         .map((h) => h.status)
         .reverse()
@@ -206,7 +204,7 @@ export function OrderDetailPage() {
             <div className="mt-6 pt-4 border-t border-[var(--color-border-strong)] space-y-2 text-sm font-medium">
               <div className="flex justify-between">
                 <span>Items Subtotal</span>
-                <span>NGN {(order.totalAmount / 100).toLocaleString()}</span>
+                <span>{formatCurrency(order.totalAmount)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Delivery</span>
@@ -218,7 +216,7 @@ export function OrderDetailPage() {
               </div>
               <div className="flex justify-between pt-2 mt-2 border-t border-[var(--color-border)] font-bold text-lg">
                 <span>Total</span>
-                <span>NGN {((order.totalAmount + order.deliveryFee) / 100).toLocaleString()}</span>
+                <span>{formatCurrency(order.totalAmount + order.deliveryFee)}</span>
               </div>
             </div>
           </section>
