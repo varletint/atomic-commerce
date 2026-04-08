@@ -5,6 +5,7 @@ import { useOrderTracking } from '../hooks/useOrderTracking';
 import { OrderStatusPill } from '../components/OrderStatusPill';
 import { ROUTES } from '@/config/routes';
 import { formatCurrency } from '@/utils';
+import { ArrowLeft } from 'lucide-react';
 
 const MAIN_STEPS = ['PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED'];
 
@@ -60,20 +61,17 @@ export function OrderDetailPage() {
   }
 
   return (
-    <div className="container py-12 max-w-5xl">
-      <div className="mb-8 flex items-center justify-between">
+    <div className="container py-1 max-w-5xl">
+      <button onClick={() => navigate('/orders')} className=" ">
+        <ArrowLeft />
+      </button>
+      <div className="mb-8 mt-4 flex items-center justify-between">
         <div>
-          <h1 className="text-xl sm:text-3xl font-black uppercase tracking-tight mb-2">
+          <h2 className="text-lg sm:text-3xl font-black uppercase tracking-tight mb-2">
             Order Details
-          </h1>
+          </h2>
           <p className="font-mono text-sm text-[var(--color-text-muted)]">ID: {order._id}</p>
         </div>
-        <button
-          onClick={() => navigate('/orders')}
-          className="btn btn-secondary text-base sm:text-xl "
-        >
-          Back to Orders
-        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

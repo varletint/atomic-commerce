@@ -119,7 +119,7 @@ export function ReviewStep({
         <Button type="button" variant="secondary" onClick={onBack} className="flex-1">
           BACK
         </Button>
-        <Button type="button" onClick={onPlaceOrder} isLoading={isPlacing} className="flex-1">
+        <Button type="button" onClick={onPlaceOrder} isLoading={isPlacing} className="sm:flex-1">
           PLACE ORDER
         </Button>
       </div>

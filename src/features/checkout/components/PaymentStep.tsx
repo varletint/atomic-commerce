@@ -90,7 +90,7 @@ export function PaymentStep({ initialMethod, onNext, onBack }: PaymentStepProps)
           type="button"
           onClick={() => selected && onNext(selected)}
           disabled={!selected}
-          className="flex-1"
+          className="sm:flex-1"
         >
           REVIEW ORDER
         </Button>

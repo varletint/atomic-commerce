@@ -101,12 +101,12 @@ export function OrdersPage() {
                   </div>
                 </div>
                 <div className="flex gap-3 w-full md:w-auto mt-4 md:mt-0">
-                  <button
+                  {/* <button
                     onClick={() => navigate(`/orders/${order._id}`)}
-                    className="btn btn-secondary flex-1 md:flex-none py-2 px-4"
+                    className="btn btn-secondary sm:flex-1 md:flex-none py-2 px-4"
                   >
                     View Details
-                  </button>
+                  </button> */}
                   <button
                     onClick={() => navigate(`/orders/${order._id}?tracking=true`)}
                     className="btn btn-primary flex-1 md:flex-none py-2 px-4 whitespace-nowrap"
