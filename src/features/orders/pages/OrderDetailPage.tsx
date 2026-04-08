@@ -63,10 +63,15 @@ export function OrderDetailPage() {
     <div className="container py-12 max-w-5xl">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-black uppercase tracking-tight mb-2">Order Details</h1>
+          <h1 className="text-xl sm:text-3xl font-black uppercase tracking-tight mb-2">
+            Order Details
+          </h1>
           <p className="font-mono text-sm text-[var(--color-text-muted)]">ID: {order._id}</p>
         </div>
-        <button onClick={() => navigate('/orders')} className="btn btn-secondary">
+        <button
+          onClick={() => navigate('/orders')}
+          className="btn btn-secondary text-base sm:text-xl "
+        >
           Back to Orders
         </button>
       </div>
@@ -118,7 +123,7 @@ export function OrderDetailPage() {
                             isCompleted ? 'text-black' : 'text-[var(--color-text-muted)]'
                           }`}
                         >
-                          {step}
+                          {step.slice(0, 3)}...
                         </span>
                       </div>
                     );
