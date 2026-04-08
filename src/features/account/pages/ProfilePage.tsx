@@ -19,8 +19,7 @@ export function ProfilePage() {
   const user = useAuthStore((s) => s.user);
   const [activeTab, setActiveTab] = useState<TabId>('personal');
 
-  if (!user) return null; // AuthGuard will prevent this
-
+  if (!user) return null;
   return (
     <>
       <SEO title="My Account — Atomic Order" description="Manage your Atomic Order account." />
@@ -31,13 +30,13 @@ export function ProfilePage() {
           <ProfileHeader user={user} />
 
           {/* ── Tab Bar ── */}
-          <div className="flex gap-0 mt-8 border-b border-[var(--color-border)] overflow-x-auto">
+          <div className="flex gap-8 mt-8 border-b border-[var(--color-border)] overflow-x-auto">
             {TABS.map((tab) => (
               <button
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-5 py-3 text-xs font-bold uppercase tracking-widest transition-colors cursor-pointer whitespace-nowrap border-b-2 ${
+                className={`flex items-center  py-3 text-xs font-bold uppercase transition-colors cursor-pointer whitespace-nowrap border-b-2 ${
                   activeTab === tab.id
                     ? 'border-[var(--color-text-heading)] text-[var(--color-text-heading)]'
                     : 'border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text-heading)]'

@@ -44,11 +44,11 @@ export function PersonalInfoTab() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       <div>
-        <h2 className="text-xl font-black uppercase tracking-widest text-[var(--color-text-heading)] mb-1">
+        <h3 className=" font-black uppercase tracking-widest text-[var(--color-text-heading)] mb-1">
           Personal Information
-        </h2>
+        </h3>
         <p className="text-sm text-[var(--color-text-muted)]">Manage your personal details.</p>
       </div>
 
@@ -62,7 +62,7 @@ export function PersonalInfoTab() {
             <button
               type="button"
               onClick={() => setIsEditing(true)}
-              className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[var(--color-text-muted)] hover:text-[var(--color-text-heading)] transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 text-xs font-bold uppercase text-[var(--color-text-muted)] hover:text-[var(--color-text-heading)] transition-colors cursor-pointer"
             >
               <Pencil size={12} /> Edit
             </button>
@@ -88,7 +88,9 @@ export function PersonalInfoTab() {
             </div>
           </form>
         ) : (
-          <p className="text-lg font-bold text-[var(--color-text-heading)]">{user?.name || '—'}</p>
+          <p className="sm:text-lg font-semibold text-[var(--color-text-heading)]">
+            {user?.name || '—'}
+          </p>
         )}
       </div>
 
@@ -97,7 +99,9 @@ export function PersonalInfoTab() {
         <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-text-muted)] block mb-4">
           Email Address
         </span>
-        <p className="text-lg font-bold text-[var(--color-text-heading)]">{user?.email || '—'}</p>
+        <p className="sm:text-lg font-semibold text-[var(--color-text-heading)]">
+          {user?.email || '—'}
+        </p>
         <p className="text-xs text-[var(--color-text-muted)] mt-2">
           Email cannot be changed. Contact support if you need to update it.
         </p>
@@ -108,7 +112,7 @@ export function PersonalInfoTab() {
         <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-text-muted)] block mb-4">
           Account Role
         </span>
-        <p className="text-lg font-bold text-[var(--color-text-heading)] uppercase tracking-wider">
+        <p className="sm:text-lg font-semibold text-[var(--color-text-heading)] uppercase tracking-wider">
           {user?.role || '—'}
         </p>
       </div>
