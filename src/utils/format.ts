@@ -4,7 +4,7 @@ export function formatCurrency(amount: number): string {
     currency: 'NGN',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(amount);
+  }).format(amount / 100);
 }
 
 export function formatDate(date: string | Date): string {
