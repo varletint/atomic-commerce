@@ -291,6 +291,11 @@ textarea::placeholder {
   color: var(--color-text-muted);
 }
 
+a {
+  text-decoration: none;
+  font-weight: 500;
+}
+
 /* ── Buttons ─────────────────────────────────────── */
 button {
   cursor: pointer;
@@ -304,7 +309,7 @@ button {
   justify-content: center;
   gap: var(--space-2);
   padding: var(--space-3) var(--space-6);
-  /* font-weight: 500; */
+  font-weight: 500;
   font-size: var(--text-sm);
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
