@@ -139,17 +139,17 @@ function App() {
           <Route
             path={ROUTES.CHECKOUT}
             element={
-              <AuthGuard>
-                <CheckoutPage />
-              </AuthGuard>
+              // <AuthGuard>
+              <CheckoutPage />
+              // </AuthGuard>
             }
           />
           <Route
             path="/checkout/verify"
             element={
-              <AuthGuard>
-                <PaymentCallbackPage />
-              </AuthGuard>
+              // <AuthGuard>
+              <PaymentCallbackPage />
+              // </AuthGuard>
             }
           />
           <Route path="*" element={<div>404 Not Found</div>} />
