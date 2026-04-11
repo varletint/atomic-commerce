@@ -15,7 +15,8 @@ import { ProductAccordion } from '../components/ProductAccordion';
 
 // Types + helpers
 import type { ProductColor } from '@/types';
-import { getUniqueColors, getUniqueSizes } from '@/types';
+import { getUniqueColors, getUniqueSizes, getPrimaryImageUrl } from '@/types';
+import { env } from '@/config/env';
 import { Button } from '@/components/ui/Button';
 
 // ── Color hex map (in production this comes from backend/CMS) ──
@@ -120,6 +121,8 @@ export function ProductDetailsPage() {
       <SEO
         title={`${product.name} — Atomic Order`}
         description={product.shortDescription ?? product.description?.substring(0, 150) ?? ''}
+        url={`${env.appUrl.replace(/\/$/, '')}/products/${product.slug}`}
+        image={getPrimaryImageUrl(product) || undefined}
       />
 
       <div className="bg-[var(--color-bg)] min-h-screen pt-4 pb-24">
