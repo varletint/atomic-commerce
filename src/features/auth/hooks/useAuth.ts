@@ -11,8 +11,7 @@ export function useAuth() {
   const { user, isAuthenticated, setUser, clearAuth } = useAuthStore();
 
   // ── GET /users/me ────────────────────────────────
-  // Only fires when there's a persisted user (i.e. a previous session).
-  // Fresh visitors or logged-out users skip this entirely.
+
   const meQuery = useQuery({
     queryKey: QUERY_KEYS.AUTH.ME,
     queryFn: async () => {
@@ -26,20 +25,18 @@ export function useAuth() {
     refetchOnReconnect: false,
   });
 
-  // Sync query result → Zustand (outside queryFn to avoid render loops)
-  useEffect(() => {
-    if (meQuery.data) {
-      setUser(meQuery.data);
-    }
-  }, [meQuery.data, setUser]);
 
   useEffect(() => {
     if (meQuery.isError) {
       clearAuth();
+      return;
     }
-  }, [meQuery.isError, clearAuth]);
+    if (meQuery.isSuccess && meQuery.data) {
+      setUser(meQuery.data);
+    }
+  }, [meQuery.isError, meQuery.isSuccess, meQuery.data, clearAuth, setUser]);
 
-  // ── Login ────────────────────────────────────────
+  // ── Login
   const loginMutation = useMutation({
     mutationFn: (data: { email: string; password: string }) => authApi.login(data),
     onSuccess: async ({ data }) => {
@@ -47,14 +44,12 @@ export function useAuth() {
       if (data.data) setUser(data.data);
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.AUTH.ME });
 
-      // Merge local guest cart → server, then hydrate from server
       const cart = useCartStore.getState();
       await cart.mergeLocalCartToServer();
       await cart.syncCartFromServer();
     },
   });
 
-  // ── Register ─────────────────────────────────────
   const registerMutation = useMutation({
     mutationFn: (data: { name: string; email: string; password: string; address: Address }) =>
       authApi.register(data),
@@ -63,14 +58,13 @@ export function useAuth() {
       if (data.data) setUser(data.data);
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.AUTH.ME });
 
-      // Merge local guest cart → server, then hydrate from server
       const cart = useCartStore.getState();
       await cart.mergeLocalCartToServer();
       await cart.syncCartFromServer();
     },
   });
 
-  // ── Verify Email ─────────────────────────────────
+  // ── Verify Email 
   const verifyEmailMutation = useMutation({
     mutationFn: (token: string) => authApi.verifyEmailByToken(token),
     onSuccess: ({ data }) => {
@@ -79,23 +73,23 @@ export function useAuth() {
     },
   });
 
-  // ── Resend Verification ──────────────────────────
+  // ── Resend Verification 
   const resendVerificationMutation = useMutation({
     mutationFn: (email: string) => authApi.resendVerification(email),
   });
 
-  // ── Forgot Password ──────────────────────────────
+  // ── Forgot Password 
   const forgotPasswordMutation = useMutation({
     mutationFn: (email: string) => authApi.forgotPassword(email),
   });
 
-  // ── Reset Password ───────────────────────────────
+  // ── Reset Password 
   const resetPasswordMutation = useMutation({
     mutationFn: (data: { email: string; otp: string; password: string }) =>
       authApi.resetPassword(data),
   });
 
-  // ── Logout ───────────────────────────────────────
+  // ── Logout
   const logoutMutation = useMutation({
     mutationFn: () => authApi.logout(),
     onSuccess: () => {

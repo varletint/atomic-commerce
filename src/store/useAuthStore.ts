@@ -33,7 +33,19 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: STORAGE_KEYS.USER,
-      partialize: (state) => ({ user: state.user }),
+      // Keep in sync with setUser/clearAuth so rehydration matches a logged-in user.
+      partialize: (state) => ({
+        user: state.user,
+        isAuthenticated: state.isAuthenticated,
+      }),
+      merge: (persisted, current) => {
+        const p = persisted as Partial<AuthState>;
+        const merged = { ...current, ...p };
+        if (merged.user && !merged.isAuthenticated) {
+          merged.isAuthenticated = true;
+        }
+        return merged;
+      },
     }
   )
 );
