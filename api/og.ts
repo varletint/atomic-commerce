@@ -2,7 +2,6 @@ export const config = {
   runtime: 'edge',
 };
 
-// Bot user agents that request OG meta for social previews
 const BOT_AGENTS = [
   'whatsapp',
   'facebookexternalhit',
@@ -21,9 +20,8 @@ const BOT_AGENTS = [
 const SITE_URL = process.env.VITE_APP_URL || 'https://atomicorder.vercel.app';
 const BACKEND_URL = process.env.VITE_API_BASE_URL?.replace(/\/api$/, '') || 'http://localhost:3000';
 const SITE_NAME = 'Atomic Order';
-const DEFAULT_IMAGE = `${SITE_URL}/favicon.svg`;
+const DEFAULT_IMAGE = `${SITE_URL}/og-default.png`;
 
-// Static page metadata with rich descriptions for social previews
 const PAGE_META: Record<string, { title: string; description: string }> = {
   '/': {
     title: `${SITE_NAME} - Seamless Order Management`,
@@ -98,10 +96,6 @@ function generateHTML(meta: PageMeta): string {
 </html>`;
 }
 
-/**
- * Fetch product meta from backend API by slug.
- * Only called for dynamic product pages — static pages are resolved at the edge.
- */
 async function getProductMeta(slug: string): Promise<PageMeta | null> {
   try {
     const res = await fetch(`${BACKEND_URL}/api/seo/meta?path=/products/${slug}`);
@@ -120,19 +114,11 @@ async function getProductMeta(slug: string): Promise<PageMeta | null> {
   }
 }
 
-/**
- * Vercel Edge Function handler.
- *
- * - Detects bot user-agents (WhatsApp, Facebook, Twitter, etc.)
- * - Bots get pre-rendered HTML with full OG meta tags
- * - Real users pass through to the SPA via x-middleware-next
- */
 export default async function handler(request: Request) {
   const userAgent = request.headers.get('user-agent') || '';
   const url = new URL(request.url);
   const pathname = url.pathname;
 
-  // Only intercept for bots — real users get the SPA
   if (!isBot(userAgent)) {
     return new Response(null, {
       status: 200,
@@ -142,17 +128,11 @@ export default async function handler(request: Request) {
 
   let meta: PageMeta | null = null;
 
-  // ──────────────────────────────────
-  // ROUTE: Product pages /products/:slug
-  // ──────────────────────────────────
   const productMatch = pathname.match(/^\/products\/([a-zA-Z0-9_-]+)$/);
   if (productMatch) {
     meta = await getProductMeta(productMatch[1]);
   }
 
-  // ──────────────────────────────────
-  // FALLBACK: Static page meta
-  // ──────────────────────────────────
   if (!meta) {
     const pageMeta = PAGE_META[pathname] || PAGE_META['/'];
     meta = {
