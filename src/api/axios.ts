@@ -3,7 +3,8 @@ import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { useAuthStore } from '@/store';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
+  baseURL: 'http://localhost:3000/api',
+  // baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
   timeout: 10_000,
   withCredentials: true,
   headers: {
@@ -11,14 +12,14 @@ const api = axios.create({
   },
 });
 
-// ── Silent Refresh State ───────────────────────────
+// ── Silent Refresh State
 let isRefreshing = false;
-let refreshFailed = false; // prevents loops after a failed refresh
+let refreshFailed = false;
 let failedQueue: {
   resolve: (value: unknown) => void;
   reject: (reason: unknown) => void;
 }[] = [];
-
+//  prevents loops after a failed refresh
 function processQueue(error: unknown | null) {
   failedQueue.forEach(({ resolve, reject }) => {
     if (error) {
@@ -35,7 +36,6 @@ export function resetRefreshState() {
   refreshFailed = false;
 }
 
-// Paths that should NEVER trigger a silent refresh
 const NO_REFRESH_PATHS = [
   '/users/login',
   '/users/register',
@@ -51,7 +51,25 @@ function shouldSkipRefresh(url: string | undefined): boolean {
   return NO_REFRESH_PATHS.some((path) => url.includes(path));
 }
 
-// ── Response Interceptor ───────────────────────────
+// ── CSRF Request Interceptor
+function getCsrfToken(): string | undefined {
+  return document.cookie
+    .split('; ')
+    .find((c) => c.startsWith('csrf-token='))
+    ?.split('=')[1];
+}
+
+api.interceptors.request.use((config) => {
+  if (config.method && config.method !== 'get') {
+    const token = getCsrfToken();
+    if (token) {
+      config.headers['X-CSRF-Token'] = token;
+    }
+  }
+  return config;
+});
+
+// ── Response Interceptor
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
@@ -59,7 +77,6 @@ api.interceptors.response.use(
       _retry?: boolean;
     };
 
-    // Skip: not a 401, already retried, a public/auth route, or refresh already failed
     if (
       error.response?.status !== 401 ||
       originalRequest._retry ||
@@ -69,7 +86,6 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // If a refresh is already in flight, queue this request
     if (isRefreshing) {
       return new Promise((resolve, reject) => {
         failedQueue.push({ resolve, reject });
