@@ -1,8 +1,12 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
+      "source": "/api/og",
+      "destination": "/api/og"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "https://atomic-vault.vercel.app/api/:path*"
     },
     {
       "source": "/(.*)",
