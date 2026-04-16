@@ -14,9 +14,9 @@ export function CartPage() {
   const isCartEmpty = items.length === 0;
 
   // Emulated values for presentation. A real app would calculate these at checkout.
-  const taxEstimate = subtotal * 0.05; // 5% tax estimate
-  const shippingEstimate = subtotal > 25000 ? 0 : 2500; // Free shipping over 25k
-  const orderTotal = subtotal + taxEstimate + shippingEstimate;
+  // const taxEstimate = subtotal * 0.05; // 5% tax estimate
+  // const shippingEstimate = subtotal > 25000 ? 0 : 2500; // Free shipping over 25k
+  // const orderTotal = subtotal + taxEstimate + shippingEstimate;
 
   if (isCartEmpty) {
     return (
@@ -100,17 +100,17 @@ export function CartPage() {
                     </span>
                   </div>
 
-                  <div className="flex justify-between text-[var(--color-text-muted)]">
+                  {/* <div className="flex justify-between text-[var(--color-text-muted)]">
                     <span>Estimated Tax (5%)</span>
                     <span>{formatCurrency(taxEstimate)}</span>
-                  </div>
+                  </div> */}
 
-                  <div className="flex justify-between text-[var(--color-text-muted)]">
+                  {/* <div className="flex justify-between text-[var(--color-text-muted)]">
                     <span>Shipping Estimate</span>
                     <span>
                       {shippingEstimate === 0 ? 'FREE' : formatCurrency(shippingEstimate)}
                     </span>
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="border-t border-[var(--color-border)] pt-4 mb-8">
@@ -119,7 +119,7 @@ export function CartPage() {
                       Total
                     </span>
                     <span className="text-2xl font-black text-[var(--color-text-heading)]">
-                      {formatCurrency(orderTotal)}
+                      {formatCurrency(subtotal)}
                     </span>
                   </div>
                 </div>
