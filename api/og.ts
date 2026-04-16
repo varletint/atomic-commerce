@@ -18,7 +18,7 @@ const BOT_AGENTS = [
 ];
 
 const SITE_URL = process.env.VITE_APP_URL || 'https://atomicorder.vercel.app';
-const BACKEND_URL = process.env.VITE_API_BASE_URL?.replace(/\/api$/, '') || 'http://localhost:3000';
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3000';
 const SITE_NAME = 'Atomic Order';
 const DEFAULT_IMAGE = `${SITE_URL}/og-default.png`;
 
