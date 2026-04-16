@@ -22,31 +22,36 @@ const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3000';
 const SITE_NAME = 'Atomic Order';
 const DEFAULT_IMAGE = `${SITE_URL}/og-default.png`;
 
-const PAGE_META: Record<string, { title: string; description: string }> = {
+const PAGE_META: Record<string, { title: string; description: string; image: string }> = {
   '/': {
     title: `${SITE_NAME} - Seamless Order Management`,
     description:
       'Discover and order quality products on Atomic Order. Your premier platform for seamless purchasing, secure checkout, and reliable delivery tracking. Start shopping today.',
+    image: DEFAULT_IMAGE,
   },
   '/login': {
     title: `Login | ${SITE_NAME}`,
     description:
       'Sign in to your Atomic Order account to manage your orders, track deliveries, and access your personalized dashboard. Secure login with full account protection.',
+    image: DEFAULT_IMAGE,
   },
   '/register': {
     title: `Create Account | ${SITE_NAME}`,
     description:
       'Join Atomic Order today. Create your free account to start shopping, track orders, and enjoy a seamless purchasing experience with secure transactions.',
+    image: DEFAULT_IMAGE,
   },
   '/products': {
     title: `Products | ${SITE_NAME}`,
     description:
       'Browse our curated catalog of quality products on Atomic Order. Find the best deals across multiple categories with fast checkout and reliable delivery.',
+    image: DEFAULT_IMAGE,
   },
   '/forgot-password': {
     title: `Reset Password | ${SITE_NAME}`,
     description:
       'Forgot your password? Reset it securely in a few simple steps. We will send you a verification code to help you regain access to your Atomic Order account.',
+    image: DEFAULT_IMAGE,
   },
 };
 
